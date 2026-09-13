@@ -85,11 +85,12 @@ export default function Search() {
         <div style={{
           padding: '16px 16px 20px',
           position: 'sticky', top: '56px', zIndex: 10,
-          backgroundColor: 'rgba(247, 243, 232, 0.85)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderBottom: '1px solid rgba(229, 224, 216, 0.5)',
-          transition: 'all 0.3s ease',
+          background: 'rgba(247, 243, 232, 0.7)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: isAdvanced ? '0 12px 32px rgba(21,94,99,0.05)' : 'none',
         }}>
           
           <form
@@ -106,45 +107,51 @@ export default function Search() {
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   style={{
-                    width: '100%', padding: '14px 44px 14px 16px',
-                    borderRadius: '14px', border: '1.5px solid transparent',
-                    backgroundColor: 'white', fontSize: '15px', color: '#252525',
+                    width: '100%', padding: '16px 48px 16px 20px',
+                    borderRadius: '20px', border: '1.5px solid rgba(255,255,255,0.8)',
+                    background: 'rgba(255,255,255,0.85)', fontSize: '16px', color: '#111',
                     fontFamily: 'Inter, sans-serif', outline: 'none',
                     boxSizing: 'border-box',
-                    boxShadow: '0 4px 20px rgba(21, 94, 99, 0.08)',
+                    boxShadow: '0 8px 32px rgba(21, 94, 99, 0.08), inset 0 2px 4px rgba(255,255,255,0.5)',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                   onFocus={e => {
                     e.target.style.borderColor = '#155E63';
-                    e.target.style.boxShadow = '0 6px 24px rgba(21, 94, 99, 0.15)';
+                    e.target.style.background = 'white';
+                    e.target.style.boxShadow = '0 12px 48px rgba(21, 94, 99, 0.15), inset 0 2px 4px rgba(255,255,255,0.8)';
                   }}
                   onBlur={e => {
-                    e.target.style.borderColor = 'transparent';
-                    e.target.style.boxShadow = '0 4px 20px rgba(21, 94, 99, 0.08)';
+                    e.target.style.borderColor = 'rgba(255,255,255,0.8)';
+                    e.target.style.background = 'rgba(255,255,255,0.85)';
+                    e.target.style.boxShadow = '0 8px 32px rgba(21, 94, 99, 0.08), inset 0 2px 4px rgba(255,255,255,0.5)';
                   }}
                 />
-                <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', display: 'flex', color: '#155E63' }}>
-                  <SearchIcon size={20} strokeWidth={2.2} />
+                <div style={{ position: 'absolute', right: '18px', top: '50%', transform: 'translateY(-50%)', display: 'flex', color: '#155E63' }}>
+                  <SearchIcon size={22} strokeWidth={2.5} />
                 </div>
               </div>
             </div>
           </form>
 
           {/* Advanced Search Toggle & Panel */}
-          <div style={{ marginTop: '12px' }}>
+          <div style={{ marginTop: '16px' }}>
             <button 
                onClick={() => { playTap(); setIsAdvanced(!isAdvanced); }} 
                style={{ 
-                 background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', 
-                 color: '#155E63', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: '6px 8px',
-                 borderRadius: '8px', transition: 'background-color 0.2s', marginLeft: '-8px'
+                 background: isAdvanced ? 'rgba(21,94,99,0.08)' : 'rgba(255,255,255,0.5)', border: isAdvanced ? '1px solid rgba(21,94,99,0.2)' : '1px solid rgba(255,255,255,0.5)',
+                 display: 'flex', alignItems: 'center', gap: '8px', 
+                 color: '#155E63', fontSize: '13px', fontWeight: 600, cursor: 'pointer', padding: '8px 14px',
+                 borderRadius: '99px', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                 boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                }}
-               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(21,94,99,0.06)'}
-               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+               onMouseEnter={e => !isAdvanced && (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.8)')}
+               onMouseLeave={e => !isAdvanced && (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.5)')}
+               onMouseDown={e => e.currentTarget.style.transform = 'scale(0.96)'}
+               onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
             >
-               <SlidersHorizontal size={14} />
+               <SlidersHorizontal size={14} strokeWidth={2.5} />
                Advanced Options
-               <ChevronDown size={14} style={{ transform: isAdvanced ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} />
+               <ChevronDown size={14} strokeWidth={2.5} style={{ transform: isAdvanced ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} />
             </button>
 
             <div style={{

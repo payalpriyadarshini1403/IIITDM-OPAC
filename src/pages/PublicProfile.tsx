@@ -70,24 +70,30 @@ export default function PublicProfile() {
       <BottomNav />
       <main style={{ padding: '68px 16px 80px', animation: 'fadeIn 0.35s ease both' }}>
         
-        {/* Profile Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '24px', backgroundColor: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+        {/* Profile Header (Pinterest/Premium Style) */}
+        <div className="glass hover-lift" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '24px', padding: '32px 24px', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+          {/* Subtle background gradient blob */}
+          <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(21,94,99,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0 }} />
+          <div style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '120px', height: '120px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,163,115,0.15) 0%, rgba(255,255,255,0) 70%)', zIndex: 0 }} />
+          
           <div style={{
-            width: '80px', height: '80px', borderRadius: '50%',
-            backgroundColor: '#155E63', color: 'white',
+            position: 'relative', zIndex: 1,
+            width: '100px', height: '100px', borderRadius: '50%',
+            background: 'linear-gradient(135deg, #155E63 0%, #0F4347 100%)', color: 'white',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '32px', fontWeight: 500, marginBottom: '16px'
+            fontSize: '36px', fontWeight: 600, marginBottom: '20px',
+            boxShadow: '0 8px 24px rgba(21,94,99,0.3), inset 0 -4px 8px rgba(0,0,0,0.15)'
           }}>
             {profileUser.name[0]}
           </div>
-          <h1 style={{ fontSize: '20px', fontWeight: 500, color: '#252525', margin: '0 0 4px' }}>
+          <h1 style={{ position: 'relative', zIndex: 1, fontSize: '24px', fontWeight: 700, color: '#155E63', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
             {profileUser.name}
           </h1>
-          <div style={{ fontSize: '14px', color: '#6B6B6B', textTransform: 'capitalize' }}>
+          <div style={{ position: 'relative', zIndex: 1, fontSize: '15px', color: '#6B6B6B', textTransform: 'capitalize', fontWeight: 500 }}>
             {profileUser.role}
           </div>
           {profileUser.role === 'faculty' && (
-             <span style={{ marginTop: '8px', padding: '4px 10px', borderRadius: '6px', backgroundColor: '#EEF2FF', color: '#4338CA', fontSize: '12px', fontWeight: 500 }}>
+             <span style={{ position: 'relative', zIndex: 1, marginTop: '12px', padding: '6px 14px', borderRadius: '99px', backgroundColor: '#FFFBEB', color: '#B45309', border: '1px solid #FEF3C7', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                Faculty Member
              </span>
           )}
@@ -131,15 +137,15 @@ export default function PublicProfile() {
              This user hasn't shared any public collections yet.
            </p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
-            {publicCols.map(col => {
+          <div className="masonry-grid">
+            {publicCols.map((col, index) => {
               const books = col.book_ids.map(bid => bookCache[bid]).filter(Boolean);
               
               // Generate Collage
               const collageCovers = books.slice(0, 3).map(b => b.cover_url);
               
               return (
-                <div key={col.id} onClick={() => { playTap(); /* In a real app we'd navigate to the collection detail page */ }} style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer' }}>
+                <div key={col.id} className="masonry-item hover-lift animate-stagger-up" onClick={() => { playTap(); /* Navigate later */ }} style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer', animationDelay: `${index * 0.05}s` }}>
                   <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5', borderRadius: '16px', overflow: 'hidden', backgroundColor: '#E0E0E0', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                     {collageCovers.length > 0 ? (
                       collageCovers.length === 1 ? (

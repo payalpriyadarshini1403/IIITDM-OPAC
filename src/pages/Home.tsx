@@ -163,60 +163,66 @@ export default function Home() {
 
         {/* Campus Updates / Social Feed */}
         <section style={{ marginBottom: '24px', animation: 'fadeIn 0.4s ease 0.15s both', padding: '0 20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: 500, color: '#252525', margin: 0 }}>Campus Updates</h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#155E63', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Campus Updates <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#E63946', animation: 'pulse-dot 2s infinite' }} />
+            </h2>
           </div>
 
           {!isGuest && (
-            <form onSubmit={handleCreatePost} style={{ display: 'flex', gap: '12px', marginBottom: '16px', backgroundColor: 'white', padding: '16px', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#155E63', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 500, flexShrink: 0 }}>
+            <form onSubmit={handleCreatePost} style={{ display: 'flex', gap: '12px', marginBottom: '24px', padding: '16px', borderRadius: '16px', transition: 'all 0.3s ease' }} className="glass hover-lift">
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#155E63', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 600, flexShrink: 0, boxShadow: '0 4px 12px rgba(21,94,99,0.3)' }}>
                 {user?.name.charAt(0)}
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <textarea 
                   value={newPostContent}
                   onChange={e => setNewPostContent(e.target.value)}
-                  placeholder="Share an update or recommendation..."
-                  style={{ width: '100%', border: 'none', outline: 'none', resize: 'none', minHeight: '40px', fontFamily: 'Inter, sans-serif', fontSize: '14px', backgroundColor: 'transparent' }}
+                  placeholder="Share a recommendation or thought..."
+                  style={{ width: '100%', border: 'none', outline: 'none', resize: 'none', minHeight: '44px', fontFamily: 'Inter, sans-serif', fontSize: '15px', backgroundColor: 'transparent', color: '#252525' }}
                 />
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="submit" disabled={!newPostContent.trim()} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', backgroundColor: newPostContent.trim() ? '#155E63' : '#E5E0D8', color: newPostContent.trim() ? 'white' : '#A0A0A0', border: 'none', borderRadius: '99px', fontWeight: 500, fontSize: '13px', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', transition: 'background-color 0.2s' }}>
-                    <Send size={14} /> Post
+                  <button type="submit" disabled={!newPostContent.trim()} className="btn-primary" style={{ padding: '8px 20px', borderRadius: '99px', backgroundColor: newPostContent.trim() ? '#155E63' : '#E5E0D8', color: newPostContent.trim() ? 'white' : '#A0A0A0', cursor: newPostContent.trim() ? 'pointer' : 'not-allowed', opacity: 1, transform: 'none' }}>
+                    <Send size={16} /> Post
                   </button>
                 </div>
               </div>
             </form>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {posts.map(post => (
-              <div key={post.id} style={{ backgroundColor: 'white', borderRadius: '16px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {posts.map((post, i) => (
+              <div key={post.id} className="glass hover-lift animate-stagger-up" style={{ borderRadius: '16px', padding: '20px', animationDelay: `${i * 0.1}s` }}>
                 {/* Author Info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: post.author_role === 'faculty' ? '#D4A373' : '#155E63', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 500 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: post.author_role === 'faculty' ? '#D4A373' : '#155E63', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 600, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                     {post.author_name?.charAt(0) || '?'}
                   </div>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#252525' }}>{post.author_name}</div>
-                    <div style={{ fontSize: '12px', color: '#6B6B6B' }}>{post.author_role} • {new Date(post.created_at).toLocaleDateString()}</div>
+                    <div style={{ fontSize: '15px', fontWeight: 600, color: '#252525', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {post.author_name} 
+                      {post.author_role === 'faculty' && <span style={{ padding: '2px 6px', backgroundColor: '#FFFBEB', color: '#B45309', fontSize: '10px', borderRadius: '4px', fontWeight: 700, textTransform: 'uppercase' }}>Faculty</span>}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>{new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
                 </div>
                 {/* Content */}
-                <p style={{ fontSize: '14px', color: '#404040', lineHeight: 1.5, margin: '0 0 12px', whiteSpace: 'pre-wrap' }}>
+                <p style={{ fontSize: '15px', color: '#333', lineHeight: 1.6, margin: '0 0 16px', whiteSpace: 'pre-wrap' }}>
                   {post.content}
                 </p>
                 {post.link_url && (
-                  <a href={post.link_url} target="_blank" rel="noreferrer" style={{ display: 'block', fontSize: '13px', color: '#155E63', textDecoration: 'none', marginBottom: '12px', padding: '12px', backgroundColor: '#F7F3E8', borderRadius: '8px', wordBreak: 'break-all' }}>
-                    🔗 {post.link_url}
+                  <a href={post.link_url} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#155E63', textDecoration: 'none', marginBottom: '16px', padding: '12px 16px', backgroundColor: 'rgba(21,94,99,0.05)', borderRadius: '12px', wordBreak: 'break-all', fontWeight: 500, transition: 'background-color 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor='rgba(21,94,99,0.08)'} onMouseLeave={e => e.currentTarget.style.backgroundColor='rgba(21,94,99,0.05)'}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: '#155E63', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>🔗</div>
+                    {post.link_url}
                   </a>
                 )}
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: '20px', borderTop: '1px solid #F0F0F0', paddingTop: '12px' }}>
-                  <button onClick={() => handleLikePost(post.id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#6B6B6B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: 0 }}>
-                    <Heart size={18} color={post.likes > 0 ? '#E63946' : 'currentColor'} fill={post.likes > 0 ? '#E63946' : 'none'} /> {post.likes}
+                <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '16px' }}>
+                  <button onClick={() => handleLikePost(post.id)} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: post.likes > 0 ? 'rgba(230, 57, 70, 0.08)' : 'transparent', border: 'none', borderRadius: '8px', color: post.likes > 0 ? '#E63946' : '#6B6B6B', fontSize: '14px', fontWeight: 600, cursor: 'pointer', padding: '10px', transition: 'all 0.2s' }} onMouseEnter={e => !post.likes && (e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.03)')} onMouseLeave={e => !post.likes && (e.currentTarget.style.backgroundColor = 'transparent')} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>
+                    <Heart size={20} color={post.likes > 0 ? '#E63946' : 'currentColor'} fill={post.likes > 0 ? '#E63946' : 'none'} style={{ transition: 'transform 0.2s' }} /> {post.likes > 0 ? post.likes : 'Like'}
                   </button>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#6B6B6B', fontSize: '13px', fontWeight: 500, cursor: 'pointer', padding: 0 }}>
-                    <MessageSquare size={18} /> Comment
+                  <button style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'transparent', border: 'none', borderRadius: '8px', color: '#6B6B6B', fontSize: '14px', fontWeight: 600, cursor: 'pointer', padding: '10px', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.03)'} onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>
+                    <MessageSquare size={20} /> Comment
                   </button>
                 </div>
               </div>

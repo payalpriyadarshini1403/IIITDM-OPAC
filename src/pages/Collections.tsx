@@ -197,15 +197,15 @@ export default function Collections() {
         )}
 
         {/* Collections Grid (Pinterest Style) */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
-          {collections.map(col => {
+        <div className="masonry-grid">
+          {collections.map((col, index) => {
             const books = col.book_ids.map(id => bookCache[id]).filter(Boolean) as Book[];
             
             // Generate Collage
             const collageCovers = books.slice(0, 3).map(b => b.cover_url);
             
             return (
-              <div key={col.id} style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer' }}>
+              <div key={col.id} className="masonry-item hover-lift animate-stagger-up" style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer', animationDelay: `${index * 0.05}s` }}>
                 <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5', borderRadius: '16px', overflow: 'hidden', backgroundColor: '#E0E0E0', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                   {collageCovers.length > 0 ? (
                     collageCovers.length === 1 ? (
