@@ -160,7 +160,22 @@ function getStore(): AppDB {
   const saved = localStorage.getItem(LS_KEY);
   if (saved && localStorage.getItem(SEEDED_KEY)) {
     try {
-      _store = JSON.parse(saved) as AppDB;
+      const parsed = JSON.parse(saved) as Partial<AppDB>;
+      // Migration: Ensure posts exist
+      if (!parsed.posts) {
+        parsed.posts = SEED_DATA.posts;
+      }
+      // Migration: Ensure users have social fields
+      if (parsed.users) {
+        parsed.users = parsed.users.map(u => ({
+          ...u,
+          bio: u.bio || '',
+          department: u.department || '',
+          skills: u.skills || [],
+          interests: u.interests || []
+        }));
+      }
+      _store = parsed as AppDB;
       return _store;
     } catch {
       localStorage.removeItem(LS_KEY);
