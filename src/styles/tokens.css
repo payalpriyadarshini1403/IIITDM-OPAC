@@ -1,0 +1,19 @@
+/* Design tokens — exact values from PRD Section 8 */
+:root {
+  --primary: #155E63;
+  --background: #F7F3E8;
+  --card: #FFFFFF;
+  --accent: #D99A5B;
+  --text: #252525;
+  --text-secondary: #6B6B6B;
+  --status-available-bg: #ECFDF5;
+  --status-available-text: #047857;
+  --status-limited-bg: #FFFBEB;
+  --status-limited-text: #B45309;
+  --status-unavailable-bg: #FEF2F2;
+  --status-unavailable-text: #B91C1C;
+
+  /* Spacing */
+  --bottom-nav-height: 64px;
+  --top-bar-height: 56px;
+}
