@@ -4,7 +4,7 @@ import { LogOut, BookOpen, Clock, AlertCircle, X, Check, Pencil } from 'lucide-r
 import { useAuth } from '../lib/auth';
 import { getDB, persist } from '../lib/db';
 import { updateUserProfile, cancelHold } from '../lib/queries';
-import { TopBar } from '../components/TopBar';
+import TopBar from '../components/TopBar';
 import { BottomNav } from '../components/BottomNav';
 import type { Loan, Hold } from '../lib/db';
 
