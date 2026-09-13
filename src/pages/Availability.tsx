@@ -5,7 +5,8 @@ import BottomNav from '../components/BottomNav';
 import StatusBadge from '../components/StatusBadge';
 import { playTap } from '../lib/sound';
 import { getBookById, getLocationByBookId, getAvailabilityStatus, type Book, type Location } from '../lib/queries';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, Map } from 'lucide-react';
+import BookCover from '../components/BookCover';
 
 export default function Availability() {
   const { id } = useParams<{ id: string }>();
@@ -68,7 +69,7 @@ export default function Availability() {
         {/* Book mini-card */}
         <div style={{ margin: '12px 16px', backgroundColor: 'white', borderRadius: '12px', padding: '14px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', display: 'flex', gap: '12px', alignItems: 'center' }}>
           <div style={{ width: '48px', height: '64px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#EDE9DD', flexShrink: 0 }}>
-            <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <BookCover book={book} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '14px', fontWeight: 500, color: '#252525', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{book.title}</div>
@@ -116,9 +117,7 @@ export default function Availability() {
             onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; }}
             onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-            </svg>
+            <Map size={18} color="white" strokeWidth={2} />
             Open Floor Map
           </button>
         </div>

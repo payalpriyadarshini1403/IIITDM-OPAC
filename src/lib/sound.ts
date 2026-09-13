@@ -59,3 +59,48 @@ export function setMuted(val: boolean) {
 export function isMuted(): boolean {
   return muted;
 }
+
+/** Simulate a quick page flip sound with a short noise burst */
+export function playPageFlip() {
+  if (muted) return;
+  try {
+    const ctx = getCtx();
+    const duration = 0.15;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    // Use a low sine wave with a quick pitch drop to simulate a thick page turn 'thwump'
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + duration);
+    
+    // Quick attack and release on volume
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+    
+    // Add a slight high-pitched noise to simulate paper friction
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(800, ctx.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + duration);
+    gain2.gain.setValueAtTime(0, ctx.currentTime);
+    gain2.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.02);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    
+    osc2.start(ctx.currentTime);
+    osc2.stop(ctx.currentTime + duration);
+  } catch {
+    // AudioContext may be blocked
+  }
+}

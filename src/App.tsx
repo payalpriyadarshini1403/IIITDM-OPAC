@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/auth';
 
 // Pages
@@ -30,6 +30,15 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 }
 
 function AppRoutes() {
+  const location = useLocation();
+  const hasSplashed = sessionStorage.getItem('has_splashed');
+
+  // If we haven't seen the splash screen in this session, and we are not ALREADY on the splash screen,
+  // redirect to the splash screen.
+  if (!hasSplashed && location.pathname !== '/') {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Splash />} />

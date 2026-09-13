@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { playSuccess, playError } from '../lib/sound';
+import { Library } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -42,13 +43,7 @@ export default function Login() {
         borderBottomRightRadius: '28px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-          <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
-            <rect x="4" y="6" width="28" height="34" rx="3" stroke="white" strokeWidth="2.2"/>
-            <rect x="12" y="6" width="28" height="34" rx="3" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="2.2"/>
-            <line x1="17" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            <line x1="17" y1="22" x2="32" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-            <line x1="17" y1="28" x2="25" y2="28" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
+          <Library size={28} color="white" />
           <span style={{ color: 'white', fontSize: '18px', fontWeight: 500 }}>IIITDM OPAC</span>
         </div>
         <h1 style={{ color: 'white', fontSize: '26px', fontWeight: 500, margin: '0 0 4px' }}>

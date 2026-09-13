@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import BottomNav from '../components/BottomNav';
 import StatusBadge from '../components/StatusBadge';
+import BookCover from '../components/BookCover';
 import { playTap, playSuccess } from '../lib/sound';
 import { useAuth } from '../lib/auth';
 import {
@@ -13,7 +14,7 @@ import {
   logReading,
   type Book, type Review, type Collection,
 } from '../lib/queries';
-import { Star, BookmarkPlus, BookmarkCheck, BookOpen, Clock, Sparkles } from 'lucide-react';
+import { Star, BookmarkPlus, BookmarkCheck, BookOpen, Clock, Sparkles, MapPin, Smartphone } from 'lucide-react';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
@@ -189,8 +190,8 @@ export default function BookDetail() {
 
         {/* Hero */}
         <div style={{ backgroundColor: '#155E63', padding: '24px 20px 32px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-          <div style={{ width: '88px', height: '120px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', backgroundColor: 'rgba(255,255,255,0.15)', boxShadow: '0 4px 16px rgba(0,0,0,0.25)' }}>
-            <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ width: '130px', height: '180px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 8px 32px rgba(26,26,62,0.18)', flexShrink: 0, marginTop: '-24px', position: 'relative', zIndex: 10, background: 'white' }}>
+            <BookCover book={book} />
           </div>
           <div style={{ flex: 1, paddingTop: '4px' }}>
             <h1 style={{ color: 'white', fontSize: '18px', fontWeight: 500, margin: '0 0 6px', lineHeight: '1.35' }}>{book.title}</h1>
@@ -241,7 +242,7 @@ export default function BookDetail() {
                 fontFamily: 'Inter, sans-serif',
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#155E63" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <MapPin size={14} color="#155E63" strokeWidth={2} />
               Find Shelf
             </button>
           )}
@@ -258,7 +259,7 @@ export default function BookDetail() {
                 fontFamily: 'Inter, sans-serif',
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+              <Smartphone size={14} color="white" strokeWidth={2} />
               Read Online
             </button>
           )}
@@ -478,8 +479,8 @@ export default function BookDetail() {
             <div style={{ display: 'flex', gap: '12px', padding: '0 20px', overflowX: 'auto', scrollbarWidth: 'none' }}>
               {related.map(rel => (
                 <button key={rel.id} onClick={() => { playTap(); navigate(`/book/${rel.id}`); }} style={{ flexShrink: 0, width: '100px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
-                  <div style={{ width: '100px', height: '136px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#EDE9DD', marginBottom: '6px' }}>
-                    <img src={rel.cover_url} alt={rel.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ width: '90px', height: '120px', borderRadius: '12px', overflow: 'hidden', marginBottom: '8px', boxShadow: '0 4px 16px rgba(26,26,62,0.12)' }}>
+                    <BookCover book={rel} />
                   </div>
                   <div style={{ fontSize: '11px', fontWeight: 500, color: '#252525', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', lineHeight: '1.35' }}>
                     {rel.title}

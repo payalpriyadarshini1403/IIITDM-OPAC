@@ -10,6 +10,7 @@ import {
   type Collection, type Book,
 } from '../lib/queries';
 import { useNavigate } from 'react-router-dom';
+import BookCover from '../components/BookCover';
 
 export default function Collections() {
   const { user } = useAuth();
@@ -201,26 +202,28 @@ export default function Collections() {
           {collections.map((col, index) => {
             const books = col.book_ids.map(id => bookCache[id]).filter(Boolean) as Book[];
             
-            // Generate Collage
-            const collageCovers = books.slice(0, 3).map(b => b.cover_url);
+            // Generate Collage Books
+            const collageBooks = books.slice(0, 3);
             
             return (
               <div key={col.id} className="masonry-item hover-lift animate-stagger-up" style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer', animationDelay: `${index * 0.05}s` }}>
                 <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5', borderRadius: '16px', overflow: 'hidden', backgroundColor: '#E0E0E0', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                  {collageCovers.length > 0 ? (
-                    collageCovers.length === 1 ? (
-                      <img src={collageCovers[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : collageCovers.length === 2 ? (
+                  {collageBooks.length > 0 ? (
+                    collageBooks.length === 1 ? (
+                      <div style={{ width: '100%', height: '100%' }}>
+                        <BookCover book={collageBooks[0]} />
+                      </div>
+                    ) : collageBooks.length === 2 ? (
                       <div style={{ display: 'flex', height: '100%' }}>
-                        <img src={collageCovers[0]} alt="" style={{ width: '50%', height: '100%', objectFit: 'cover', borderRight: '1px solid white' }} />
-                        <img src={collageCovers[1]} alt="" style={{ width: '50%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ width: '50%', height: '100%', borderRight: '1px solid white' }}><BookCover book={collageBooks[0]} /></div>
+                        <div style={{ width: '50%', height: '100%' }}><BookCover book={collageBooks[1]} /></div>
                       </div>
                     ) : (
                       <div style={{ display: 'flex', height: '100%' }}>
-                        <img src={collageCovers[0]} alt="" style={{ width: '60%', height: '100%', objectFit: 'cover', borderRight: '1px solid white' }} />
+                        <div style={{ width: '60%', height: '100%', borderRight: '1px solid white' }}><BookCover book={collageBooks[0]} /></div>
                         <div style={{ width: '40%', display: 'flex', flexDirection: 'column' }}>
-                          <img src={collageCovers[1]} alt="" style={{ width: '100%', height: '50%', objectFit: 'cover', borderBottom: '1px solid white' }} />
-                          <img src={collageCovers[2]} alt="" style={{ width: '100%', height: '50%', objectFit: 'cover' }} />
+                          <div style={{ width: '100%', height: '50%', borderBottom: '1px solid white' }}><BookCover book={collageBooks[1]} /></div>
+                          <div style={{ width: '100%', height: '50%' }}><BookCover book={collageBooks[2]} /></div>
                         </div>
                       </div>
                     )

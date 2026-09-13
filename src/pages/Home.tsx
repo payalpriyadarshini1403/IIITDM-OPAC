@@ -5,7 +5,8 @@ import TopBar from '../components/TopBar';
 import BottomNav from '../components/BottomNav';
 import SideMenu from '../components/SideMenu';
 import { playTap } from '../lib/sound';
-import { MessageSquare, Heart, Send, ExternalLink, X, Search, Bell, Bookmark, Clock, Zap, Smartphone } from 'lucide-react';
+import { MessageSquare, Heart, Send, ExternalLink, X, Search, Bell, Bookmark, Clock, Zap, Smartphone, ChevronRight, Menu, ThumbsUp, Repeat, Share2, Plus, Users, Briefcase } from 'lucide-react';
+import BookCover from '../components/BookCover';
 import {
   getAllBooks, getRecommendations, getBookById, getAllSubjects,
   getFeedPosts, createPost, likePost, getComments, addComment,
@@ -27,10 +28,12 @@ const TEXT2 = '#6B6B8A';
 const TEXT3 = '#9B9BB4';
 
 const CARD: React.CSSProperties = {
-  background: WHITE,
-  borderRadius: '20px',
-  boxShadow: '0 2px 16px rgba(26,26,62,0.08)',
-  border: '1px solid rgba(124,110,250,0.06)',
+  background: 'rgba(255, 255, 255, 0.65)',
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  borderRadius: '24px',
+  boxShadow: '0 8px 32px rgba(31, 38, 135, 0.07)',
+  border: '1px solid rgba(255, 255, 255, 0.4)',
 };
 
 // ─── Comment Sheet ─────────────────────────────────────────────────────────────
@@ -157,23 +160,31 @@ function PostCard({ post, currentUser, onRefresh }: {
       >
         <div style={{ padding: '18px 18px 0' }}>
           {/* Author row */}
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '14px' }}>
             <div style={{ position: 'relative' }}>
-              <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: avatarBg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, boxShadow: post.author_role === 'faculty' ? `0 4px 12px ${AMBER}55` : `0 4px 12px ${PURPLE}55` }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: avatarBg, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 800, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                 {post.author_name?.[0] || '?'}
               </div>
-              <div style={{ position: 'absolute', bottom: '1px', right: '1px', width: '11px', height: '11px', background: GREEN, border: '2px solid white', borderRadius: '50%' }} />
+              <div style={{ position: 'absolute', bottom: '2px', right: '2px', width: '12px', height: '12px', background: GREEN, border: '2px solid white', borderRadius: '50%' }} />
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap' as const }}>
-                <span style={{ fontWeight: 700, fontSize: '15px', color: TEXT }}>{post.author_name}</span>
-                {post.author_role === 'faculty' ? (
-                  <span style={{ padding: '2px 8px', background: '#FFF4E0', color: AMBER, borderRadius: '99px', fontSize: '10px', fontWeight: 800, textTransform: 'uppercase' as const }}>Faculty</span>
-                ) : (
-                  <span style={{ padding: '2px 8px', background: '#EEF0FF', color: PURPLE, borderRadius: '99px', fontSize: '10px', fontWeight: 700 }}>Student</span>
+            <div style={{ flex: 1, paddingTop: '2px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontWeight: 700, fontSize: '15px', color: TEXT, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {post.author_name}
+                  {post.author_role === 'faculty' && <Briefcase size={12} color={AMBER} />}
+                </span>
+                {currentUser?.id !== post.author_id && (
+                  <button onClick={() => { playTap(); alert('Followed! (stub)'); }} style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: PURPLE, fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}>
+                    <Plus size={14} /> Follow
+                  </button>
                 )}
               </div>
-              <div style={{ fontSize: '12px', color: TEXT3, marginTop: '2px', fontWeight: 500 }}>{timeAgo(post.created_at)} ago</div>
+              <div style={{ fontSize: '12px', color: TEXT2, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {post.author_role === 'faculty' ? 'Faculty Member • Information Technology' : 'B.Tech Student • Computer Science'}
+              </div>
+              <div style={{ fontSize: '11px', color: TEXT3, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {timeAgo(post.created_at)} ago • <Users size={10} />
+              </div>
             </div>
           </div>
 
@@ -198,26 +209,42 @@ function PostCard({ post, currentUser, onRefresh }: {
           )}
         </div>
 
-        {/* Action bar */}
-        <div style={{ display: 'flex', borderTop: '1px solid #F4F3FF' }}>
+        {/* Action bar (LinkedIn style) */}
+        <div style={{ display: 'flex', borderTop: '1px solid rgba(124,110,250,0.1)', padding: '4px 8px' }}>
           <button onClick={handleLike}
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', padding: '13px', background: liked ? '#FFF0F4' : 'transparent', border: 'none', cursor: 'pointer', color: liked ? PINK : TEXT3, fontSize: '13px', fontWeight: 600, transition: 'all 0.2s', borderRight: '1px solid #F4F3FF', fontFamily: 'Inter,sans-serif' }}
-            onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
-            onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            <Heart size={18} fill={liked ? PINK : 'none'} color={liked ? PINK : TEXT3}
-              style={{ transform: heartBump ? 'scale(1.45)' : 'scale(1)', transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)' }} />
-            {localLikes > 0 ? localLikes : 'Like'}
-          </button>
-          <button onClick={() => setShowComments(true)}
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', padding: '13px', background: 'transparent', border: 'none', cursor: 'pointer', color: TEXT3, fontSize: '13px', fontWeight: 600, transition: 'all 0.2s', fontFamily: 'Inter,sans-serif' }}
-            onMouseEnter={e => e.currentTarget.style.background = '#F4F3FF'}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px 0', background: 'transparent', border: 'none', cursor: 'pointer', color: liked ? PURPLE : TEXT2, fontSize: '12px', fontWeight: 600, transition: 'all 0.2s', fontFamily: 'Inter,sans-serif', borderRadius: '8px' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(124,110,250,0.08)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'}
             onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
           >
-            <MessageSquare size={18} color={TEXT3} />
-            {post.comment_count ? post.comment_count : 'Comment'}
+            <ThumbsUp size={18} fill={liked ? PURPLE : 'none'} color={liked ? PURPLE : TEXT2}
+              style={{ transform: heartBump ? 'scale(1.45)' : 'scale(1)', transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)' }} />
+            {localLikes > 0 ? localLikes : 'Like'}
+          </button>
+          <button onClick={() => setShowComments(true)}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px 0', background: 'transparent', border: 'none', cursor: 'pointer', color: TEXT2, fontSize: '12px', fontWeight: 600, transition: 'all 0.2s', fontFamily: 'Inter,sans-serif', borderRadius: '8px' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(124,110,250,0.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <MessageSquare size={18} color={TEXT2} />
+            {post.comment_count > 0 ? post.comment_count : 'Comment'}
+          </button>
+          <button onClick={() => { playTap(); alert('Reposting… (stub)'); }}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px 0', background: 'transparent', border: 'none', cursor: 'pointer', color: TEXT2, fontSize: '12px', fontWeight: 600, transition: 'all 0.2s', fontFamily: 'Inter,sans-serif', borderRadius: '8px' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(124,110,250,0.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <Repeat size={18} color={TEXT2} />
+            Repost
+          </button>
+          <button onClick={() => { playTap(); alert('Sharing… (stub)'); }}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px 0', background: 'transparent', border: 'none', cursor: 'pointer', color: TEXT2, fontSize: '12px', fontWeight: 600, transition: 'all 0.2s', fontFamily: 'Inter,sans-serif', borderRadius: '8px' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(124,110,250,0.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <Share2 size={18} color={TEXT2} />
+            Send
           </button>
         </div>
       </div>
@@ -236,7 +263,7 @@ function BookRow({ book }: { book: Book }) {
       onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 16px rgba(26,26,62,0.08)'; e.currentTarget.style.transform = 'translateX(0)'; }}
     >
       <div style={{ width: '52px', height: '68px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
-        <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <BookCover book={book} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: '14px', fontWeight: 700, color: TEXT, marginBottom: '4px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, lineHeight: 1.3 }}>{book.title}</div>
@@ -247,7 +274,7 @@ function BookRow({ book }: { book: Book }) {
         </div>
       </div>
       <div style={{ color: TEXT3, flexShrink: 0 }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <ChevronRight size={16} strokeWidth={2.5} />
       </div>
     </button>
   );
@@ -304,18 +331,28 @@ export default function Home() {
   const firstName = user ? user.name.split(' ')[0] : 'Guest';
 
   return (
-    <div style={{ minHeight: '100vh', background: BG, fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#f6f6f9',
+      backgroundImage: `
+        radial-gradient(at 0% 0%, rgba(124, 110, 250, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(0, 201, 167, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(255, 107, 157, 0.1) 0px, transparent 50%)
+      `,
+      backgroundAttachment: 'fixed',
+      fontFamily: 'Inter, system-ui, sans-serif'
+    }}>
 
       {/* ── Dark Navy Header ─────────────────────────────────────────────────── */}
-      <div style={{ background: `linear-gradient(160deg, ${NAVY} 0%, ${NAVY2} 60%, #2A2060 100%)`, paddingTop: '0', paddingBottom: '28px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'rgba(26, 26, 62, 0.85)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', paddingTop: '0', paddingBottom: '28px', position: 'relative', overflow: 'hidden', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         {/* Subtle blobs */}
-        <div style={{ position: 'absolute', top: '-60px', right: '-40px', width: '200px', height: '200px', borderRadius: '50%', background: `radial-gradient(circle, ${PURPLE}33 0%, transparent 70%)` }} />
-        <div style={{ position: 'absolute', bottom: '-40px', left: '-30px', width: '160px', height: '160px', borderRadius: '50%', background: `radial-gradient(circle, ${TEAL}22 0%, transparent 70%)` }} />
+        <div style={{ position: 'absolute', top: '-60px', right: '-40px', width: '300px', height: '300px', borderRadius: '50%', background: `radial-gradient(circle, ${PURPLE}55 0%, transparent 70%)`, filter: 'blur(40px)' }} />
+        <div style={{ position: 'absolute', bottom: '-40px', left: '-30px', width: '250px', height: '250px', borderRadius: '50%', background: `radial-gradient(circle, ${TEAL}44 0%, transparent 70%)`, filter: 'blur(40px)' }} />
 
         {/* Top bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '56px 20px 24px', position: 'relative', zIndex: 1 }}>
           <button onClick={() => setMenuOpen(true)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '12px', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+            <Menu size={18} color="white" strokeWidth={2.5} />
           </button>
           <span style={{ fontSize: '17px', fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>IIITDM Library</span>
           <div style={{ position: 'relative' }}>
@@ -372,8 +409,8 @@ export default function Home() {
       <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       {/* ── Tab Switcher ─────────────────────────────────────────────────────── */}
-      <div style={{ padding: '20px 20px 0' }}>
-        <div style={{ display: 'flex', background: WHITE, borderRadius: '16px', padding: '5px', boxShadow: '0 2px 12px rgba(26,26,62,0.07)' }}>
+      <div style={{ padding: '20px 20px 0', position: 'sticky', top: '0', zIndex: 40, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', background: 'rgba(246, 246, 249, 0.6)' }}>
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderRadius: '16px', padding: '5px', boxShadow: '0 4px 12px rgba(26,26,62,0.05)', border: '1px solid rgba(255,255,255,0.5)' }}>
           {(['feed', 'books'] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               style={{ flex: 1, padding: '11px', borderRadius: '12px', border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '14px', fontFamily: 'Inter,sans-serif', transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)', background: activeTab === tab ? PURPLE : 'transparent', color: activeTab === tab ? 'white' : TEXT3, boxShadow: activeTab === tab ? `0 4px 14px ${PURPLE}44` : 'none' }}>
@@ -485,7 +522,7 @@ export default function Home() {
                       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                     >
                       <div style={{ width: '120px', height: '162px', borderRadius: '14px', overflow: 'hidden', marginBottom: '9px', boxShadow: '0 8px 24px rgba(26,26,62,0.15)' }}>
-                        <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <BookCover book={book} />
                       </div>
                       <div style={{ fontSize: '12px', fontWeight: 700, color: TEXT, lineHeight: 1.35, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const }}>{book.title}</div>
                       <div style={{ fontSize: '11px', color: TEXT3, marginTop: '3px', fontWeight: 500 }}>{book.authors[0]?.split(' ').pop()}</div>

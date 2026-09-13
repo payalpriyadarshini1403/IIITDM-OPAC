@@ -6,7 +6,7 @@ import SideMenu from '../components/SideMenu';
 import { playTap } from '../lib/sound';
 import { getAllSubjects, getBooksBySubject } from '../lib/queries';
 
-import { Code, Palette, Calculator, Building, Cog, Brain, Sprout, BarChart3, Library } from 'lucide-react';
+import { Code, Palette, Calculator, Building, Cog, Brain, Sprout, BarChart3, Library, ChevronRight } from 'lucide-react';
 
 const SUBJECT_ICONS: Record<string, React.ReactNode> = {
   'Computer Science': <Code size={24} strokeWidth={1.5} color="#155E63" />,
@@ -87,9 +87,7 @@ export default function Browse() {
                   <div style={{ fontSize: '15px', fontWeight: 500, color: '#252525', marginBottom: '3px' }}>{subject.name}</div>
                   <div style={{ fontSize: '12px', color: '#6B6B6B' }}>{subject.count} book{subject.count !== 1 ? 's' : ''}</div>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
+                <ChevronRight size={16} color="#6B6B6B" strokeWidth={2} />
               </button>
             ))}
           </div>

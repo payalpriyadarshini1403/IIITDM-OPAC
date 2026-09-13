@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, BookOpen, Clock, AlertCircle, X, Check, Pencil } from 'lucide-react';
+import { LogOut, BookOpen, Clock, Heart, Plus, MapPin, Grid, Lock, Globe, ExternalLink, Activity, Target } from 'lucide-react';
+import BookCover from '../components/BookCover';
 import { useAuth } from '../lib/auth';
 import { getDB, persist } from '../lib/db';
 import { updateUserProfile, cancelHold } from '../lib/queries';
@@ -256,8 +257,8 @@ export default function Account() {
                 }}>
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                     <button onClick={() => { playTap(); navigate(`/book/${book.id}`); }} style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
-                      <div style={{ width: '44px', height: '58px', borderRadius: '5px', overflow: 'hidden', backgroundColor: '#EDE9DD', flexShrink: 0 }}>
-                        <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div style={{ width: '42px', height: '56px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0, backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                        <BookCover book={book} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '13px', fontWeight: 500, color: '#252525', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{book.title}</div>
@@ -302,8 +303,8 @@ export default function Account() {
               if (!book) return null;
               return (
                 <div key={hold.id} style={{ backgroundColor: 'white', borderRadius: '12px', padding: '12px', marginBottom: '10px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <div style={{ width: '44px', height: '58px', borderRadius: '5px', overflow: 'hidden', backgroundColor: '#EDE9DD', flexShrink: 0 }}>
-                    <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ width: '56px', height: '76px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 4px 12px rgba(26,26,62,0.1)' }}>
+                    <BookCover book={book} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '13px', fontWeight: 500, color: '#252525', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{book.title}</div>
@@ -343,8 +344,8 @@ export default function Account() {
                 if (!book) return null;
                 return (
                   <div key={loan.id} style={{ backgroundColor: 'white', borderRadius: '12px', padding: '12px', marginBottom: '8px', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', display: 'flex', gap: '12px', alignItems: 'center', opacity: 0.8 }}>
-                    <div style={{ width: '36px', height: '48px', borderRadius: '4px', overflow: 'hidden', backgroundColor: '#EDE9DD', flexShrink: 0 }}>
-                      <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ width: '44px', height: '60px', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 2px 8px rgba(26,26,62,0.08)' }}>
+                      <BookCover book={book} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '13px', fontWeight: 500, color: '#252525', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{book.title}</div>

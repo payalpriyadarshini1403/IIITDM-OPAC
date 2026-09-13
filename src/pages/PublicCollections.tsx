@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar';
 import BottomNav from '../components/BottomNav';
 import { playTap, playSuccess } from '../lib/sound';
 import { getAllCollections, getBookById, getUserById, type Collection, type Book, type User } from '../lib/queries';
+import BookCover from '../components/BookCover';
 
 export default function PublicCollections() {
   const navigate = useNavigate();
@@ -92,7 +93,7 @@ export default function PublicCollections() {
                         style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                       >
                         <div style={{ width: '52px', height: '70px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#EDE9DD' }}>
-                          <img src={b.cover_url} alt={b.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <BookCover book={b} />
                         </div>
                       </button>
                     ))}

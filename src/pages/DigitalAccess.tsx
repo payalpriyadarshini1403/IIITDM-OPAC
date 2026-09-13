@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import BottomNav from '../components/BottomNav';
 import { playTap } from '../lib/sound';
-import { BookOpen, FileText, Smartphone } from 'lucide-react';
+import { BookOpen, FileText, Smartphone, ChevronRight } from 'lucide-react';
 import { getBookById, type Book } from '../lib/queries';
+import BookCover from '../components/BookCover';
 
 export default function DigitalAccess() {
   const { id } = useParams<{ id: string }>();
@@ -75,7 +76,7 @@ export default function DigitalAccess() {
           boxShadow: '0 1px 4px rgba(0,0,0,0.06)', marginBottom: '20px',
         }}>
           <div style={{ width: '48px', height: '64px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#EDE9DD', flexShrink: 0 }}>
-            <img src={book.cover_url} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <BookCover book={book} />
           </div>
           <div>
             <div style={{ fontSize: '14px', fontWeight: 500, color: '#252525', marginBottom: '3px' }}>{book.title}</div>
@@ -115,9 +116,7 @@ export default function DigitalAccess() {
                   {opt.desc}
                 </div>
               </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={opt.primary ? 'rgba(255,255,255,0.8)' : '#6B6B6B'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
+              <ChevronRight size={16} color={opt.primary ? 'rgba(255,255,255,0.8)' : '#6B6B6B'} strokeWidth={2} />
             </button>
           ))}
         </div>

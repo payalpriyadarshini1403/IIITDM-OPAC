@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { type Book, getAvailabilityStatus } from '../lib/queries';
 import { playTap } from '../lib/sound';
 import StatusBadge from './StatusBadge';
+import BookCover from './BookCover';
+import { ChevronRight } from 'lucide-react';
 
 interface BookCardProps {
   book: Book;
@@ -47,14 +49,7 @@ export default function BookCard({ book, compact = false }: BookCardProps) {
         overflow: 'hidden',
         backgroundColor: '#EDE9DD',
       }}>
-        <img
-          src={book.cover_url}
-          alt={book.title}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          onError={e => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
-        />
+        <BookCover book={book} />
       </div>
 
       {/* Info */}
@@ -89,9 +84,7 @@ export default function BookCard({ book, compact = false }: BookCardProps) {
 
       {/* Chevron */}
       <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '4px' }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
+        <ChevronRight size={16} color="#6B6B6B" strokeWidth={2} />
       </div>
     </button>
   );

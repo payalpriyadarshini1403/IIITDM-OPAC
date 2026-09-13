@@ -17,6 +17,7 @@ export interface Book {
   cover_url: string;
   description: string;
   published_year: number;
+  isbn: string;
 }
 
 export interface Location {
@@ -123,16 +124,28 @@ export interface ReadingHistory {
 // ─── Helper ────────────────────────────────────────────────────────────────────
 
 function dbBookToBook(b: ReturnType<typeof getDB>['books'][0]): Book {
+  let parsedAuthors: string[] = [];
+  if (Array.isArray(b.authors)) {
+    parsedAuthors = b.authors;
+  } else if (typeof b.authors === 'string') {
+    try {
+      parsedAuthors = b.authors.startsWith('[') ? JSON.parse(b.authors) : [b.authors];
+    } catch {
+      parsedAuthors = [b.authors];
+    }
+  }
+
   return {
     id: b.id,
     title: b.title,
-    authors: JSON.parse(b.authors || '[]'),
+    authors: parsedAuthors,
     subject: b.subject,
     call_number: b.call_number,
     format: b.format as Book['format'],
     cover_url: b.cover_url,
     description: b.description,
     published_year: b.published_year,
+    isbn: b.isbn || '',
   };
 }
 
