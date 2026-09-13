@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, BookOpen, Clock, AlertCircle, X, Check, Pencil } from 'lucide-react';
 import { useAuth } from '../lib/auth';
-import { loans, bookCache, holds } from '../lib/db';
+import { getDB, persist } from '../lib/db';
 import { updateUserProfile, cancelHold } from '../lib/queries';
 import { TopBar } from '../components/TopBar';
 import { BottomNav } from '../components/BottomNav';
@@ -32,6 +32,9 @@ const StatusBadge = ({ status }: { status: 'available' | 'unavailable' | 'reserv
 export function Account() {
   const navigate = useNavigate();
   const { user, logout, isLoading } = useAuth();
+  const db = getDB();
+  const { loans, bookCache, holds } = db;
+
   
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'library' | 'profile'>('library');
