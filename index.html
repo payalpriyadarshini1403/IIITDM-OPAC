@@ -1,17 +1,470 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/iiitdm-opac/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="IIITDM OPAC — Library Search & Discoverability App for IIITDM Jabalpur. Find books, check availability, and locate resources easily." />
-    <title>IIITDM OPAC — Library Search</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>IIITDM OPAC - Library Search</title>
+<meta name="description" content="IIITDM Jabalpur Central Library OPAC - Search books, check availability, locate on shelf.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Inter',-apple-system,sans-serif;background:#F7F3E8;color:#252525;min-height:100vh;overflow-x:hidden;}
+:root{
+  --pri:#155E63;--pri-dk:#0F4347;--pri-lt:rgba(21,94,99,.1);
+  --bg:#F7F3E8;--muted:#6B6B6B;--light:#A3A3A3;--bdr:#EDE9DD;
+  --sh-sm:0 2px 8px rgba(0,0,0,.06);--sh-md:0 4px 20px rgba(0,0,0,.08);
+  --r-md:12px;--r-lg:16px;
+}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:#D4CFC5;border-radius:4px;}
+button,input{font-family:'Inter',sans-serif;cursor:pointer;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.afu{animation:fadeInUp .4s ease both;}
+#app{max-width:480px;margin:0 auto;min-height:100vh;background:#F7F3E8;}
+
+/* SIDEBAR */
+.sidebar{display:none;flex-direction:column;width:240px;height:100vh;background:#fff;border-right:1px solid var(--bdr);position:fixed;left:0;top:0;z-index:200;box-shadow:2px 0 16px rgba(0,0,0,.05);}
+.sb-brand{padding:22px 20px;border-bottom:1px solid var(--bdr);}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:3px;}
+.sb-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#155E63,#0F4347);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.sb-title{font-size:16px;font-weight:800;color:#155E63;}
+.sb-sub{font-size:11px;color:var(--muted);}
+.sb-nav{flex:1;padding:14px 12px;overflow-y:auto;}
+.sb-lbl{font-size:10px;font-weight:700;color:var(--light);letter-spacing:.08em;padding:0 8px;margin:16px 0 6px;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:var(--r-md);border:none;background:none;width:100%;text-align:left;font-size:14px;font-weight:500;color:var(--muted);transition:all .2s;margin-bottom:2px;}
+.sb-item:hover{background:#F7F3E8;color:#155E63;}
+.sb-item.active{background:rgba(21,94,99,.08);color:#155E63;font-weight:700;}
+.sb-icon{font-size:18px;width:24px;text-align:center;}
+.sb-foot{padding:16px;border-top:1px solid var(--bdr);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F7F3E8;border-radius:var(--r-md);}
+.sb-avatar{width:36px;height:36px;background:linear-gradient(135deg,#155E63,#0F4347);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0;}
+.sb-uname{font-size:13px;font-weight:700;}
+.sb-uid{font-size:11px;color:var(--muted);}
+.main-wrap{flex:1;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(247,243,232,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(229,224,216,.5);height:56px;display:flex;align-items:center;padding:0 16px;gap:10px;}
+.tb-back{width:36px;height:36px;border:none;background:none;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#155E63;font-size:22px;transition:background .2s;flex-shrink:0;}
+.tb-back:hover{background:var(--pri-lt);}
+.tb-title{flex:1;font-size:17px;font-weight:700;}
+.tb-action{width:36px;height:36px;border:none;background:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .2s;}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(229,224,216,.6);display:flex;z-index:150;padding-bottom:env(safe-area-inset-bottom);}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0 12px;border:none;background:none;transition:all .2s;}
+.ni-icon{font-size:22px;line-height:1;transition:transform .2s;}
+.ni-lbl{font-size:10px;font-weight:500;margin-top:4px;color:var(--light);}
+.ni.active .ni-lbl{color:#155E63;font-weight:700;}
+.ni.active .ni-icon{transform:translateY(-2px);}
+
+/* PAGES */
+.page{display:none;min-height:100vh;padding-bottom:80px;animation:fadeIn .28s ease;}
+.page.active{display:block;}
+
+/* SPLASH */
+.sp-wrap{background:linear-gradient(160deg,#155E63 0%,#0A3D40 50%,#0F2D30 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;}
+.sp-logo{width:88px;height:88px;background:rgba(255,255,255,.12);border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:42px;margin-bottom:28px;animation:pulse 2.5s infinite;border:2px solid rgba(255,255,255,.2);}
+.sp-title{font-size:34px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:8px;}
+.sp-sub{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:6px;text-align:center;}
+.sp-inst{font-size:12px;color:rgba(255,255,255,.35);text-align:center;margin-bottom:56px;}
+.sp-btn{width:100%;max-width:340px;padding:17px;background:#fff;color:#155E63;border:none;border-radius:18px;font-size:16px;font-weight:800;transition:all .2s;box-shadow:0 10px 40px rgba(0,0,0,.25);}
+.sp-btn:hover{transform:translateY(-2px);box-shadow:0 14px 48px rgba(0,0,0,.3);}
+.sp-feats{display:flex;gap:28px;margin-top:40px;}
+.sp-feat{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.sp-ftext{font-size:11px;color:rgba(255,255,255,.45);text-align:center;line-height:1.4;}
+
+/* LOGIN */
+.lg-hero{padding:44px 24px 28px;text-align:center;background:linear-gradient(170deg,#155E63 0%,#0A3D40 100%);}
+.lg-logo{width:64px;height:64px;background:rgba(255,255,255,.15);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px;border:2px solid rgba(255,255,255,.25);}
+.lg-welcome{font-size:24px;font-weight:800;color:#fff;margin-bottom:4px;}
+.lg-desc{font-size:13px;color:rgba(255,255,255,.6);}
+.lg-card{background:#fff;border-radius:28px 28px 0 0;padding:28px 24px 48px;box-shadow:0 -10px 40px rgba(0,0,0,.08);}
+.lg-t{font-size:19px;font-weight:800;margin-bottom:4px;}
+.lg-s{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.fg{margin-bottom:16px;}
+.flbl{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:7px;letter-spacing:.05em;}
+.finp{width:100%;padding:14px 16px;border:1.5px solid var(--bdr);border-radius:var(--r-md);font-size:15px;color:#252525;background:#FAFAFA;outline:none;transition:all .2s;}
+.finp:focus{border-color:#155E63;background:#fff;box-shadow:0 0 0 3px rgba(21,94,99,.1);}
+.btn-pri{width:100%;padding:15px;background:linear-gradient(135deg,#155E63,#0F4347);color:#fff;border:none;border-radius:var(--r-md);font-size:15px;font-weight:700;transition:all .2s;box-shadow:0 5px 18px rgba(21,94,99,.3);margin-top:6px;}
+.btn-pri:hover{transform:translateY(-1px);}
+.demo-hint{background:#F0FFF4;border:1px solid #BBF7D0;border-radius:var(--r-md);padding:13px 15px;margin-top:16px;font-size:12px;color:#15803D;line-height:1.7;}
+.err-msg{color:#DC2626;font-size:13px;margin-top:8px;padding:10px 14px;background:#FFF0F0;border-radius:8px;display:none;}
+.err-msg.show{display:block;}
+
+/* HOME */
+.hm-header{background:linear-gradient(135deg,#155E63,#0F4347);padding:20px 20px 30px;color:#fff;}
+.hm-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+.hm-greet{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:3px;}
+.hm-name{font-size:22px;font-weight:800;letter-spacing:-.3px;}
+.hm-av{width:44px;height:44px;background:rgba(255,255,255,.18);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,.28);flex-shrink:0;}
+.hm-search{background:rgba(255,255,255,.13);border:1.5px solid rgba(255,255,255,.22);border-radius:14px;padding:13px 16px;display:flex;align-items:center;gap:10px;transition:all .2s;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:0 14px;margin-top:-18px;}
+.stat-card{background:#fff;border-radius:var(--r-md);padding:14px 10px;text-align:center;box-shadow:var(--sh-md);}
+.stat-val{font-size:22px;font-weight:800;color:#155E63;}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:3px;font-weight:500;}
+.sec{padding:20px 14px 0;}
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.sec-title{font-size:15px;font-weight:700;}
+.sec-link{font-size:13px;color:#155E63;font-weight:600;background:none;border:none;padding:4px;}
+.bscroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;}
+.bscroll::-webkit-scrollbar{display:none;}
+.bc-sm{flex-shrink:0;width:126px;}
+.bcov-sm{width:126px;height:174px;border-radius:var(--r-md);display:flex;align-items:flex-end;padding:10px;margin-bottom:8px;box-shadow:var(--sh-md);transition:transform .25s;overflow:hidden;}
+.bc-sm:hover .bcov-sm{transform:translateY(-4px) scale(1.03);}
+.bcov-lbl{font-size:10px;font-weight:700;color:#fff;line-height:1.3;text-shadow:0 1px 4px rgba(0,0,0,.4);}
+.bc-title{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.bc-auth{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{padding:8px 16px;border-radius:999px;background:#fff;border:1.5px solid transparent;color:#252525;font-size:13px;font-weight:500;transition:all .2s;box-shadow:var(--sh-sm);}
+.chip:hover{border-color:#155E63;color:#155E63;transform:translateY(-1px);}
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.qa-card{background:#fff;border-radius:var(--r-lg);padding:16px;transition:all .2s;box-shadow:var(--sh-sm);border:1.5px solid transparent;text-align:left;}
+.qa-card:hover{border-color:#155E63;transform:translateY(-2px);box-shadow:var(--sh-md);}
+.qa-icon{font-size:28px;margin-bottom:10px;display:block;}
+.qa-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.qa-desc{font-size:11px;color:var(--muted);}
+
+/* SEARCH */
+.srch-sticky{position:sticky;top:0;z-index:50;background:rgba(247,243,232,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:12px 14px 16px;border-bottom:1px solid rgba(229,224,216,.5);}
+.srch-box{position:relative;}
+.srch-inp{width:100%;padding:14px 48px 14px 16px;border:1.5px solid transparent;border-radius:14px;background:#fff;font-size:15px;color:#252525;outline:none;transition:all .3s;box-shadow:var(--sh-md);}
+.srch-inp:focus{border-color:#155E63;box-shadow:0 6px 24px rgba(21,94,99,.15);}
+.srch-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:#155E63;font-size:20px;}
+.sug-item{display:flex;align-items:center;gap:12px;padding:13px 14px;background:#fff;border-radius:var(--r-md);border:none;width:100%;text-align:left;margin-bottom:8px;box-shadow:var(--sh-sm);transition:all .2s;}
+.sug-item:hover{transform:translateX(5px);background:#F8FBFB;}
+.sug-t{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;display:block;}
+.sug-s{font-size:12px;color:var(--muted);}
+
+/* RESULTS */
+.res-top{background:rgba(247,243,232,.93);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:12px 14px;border-bottom:1px solid rgba(229,224,216,.5);position:sticky;top:0;z-index:50;}
+.res-q{font-size:17px;font-weight:800;margin-bottom:3px;}
+.res-cnt{font-size:13px;color:var(--muted);}
+.fbar{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;scrollbar-width:none;}
+.fbar::-webkit-scrollbar{display:none;}
+.fc{flex-shrink:0;padding:7px 14px;border-radius:999px;background:#fff;border:1.5px solid var(--bdr);font-size:12px;font-weight:500;color:var(--muted);transition:all .2s;}
+.fc.active{background:#155E63;color:#fff;border-color:#155E63;}
+.fc:hover:not(.active){border-color:#155E63;color:#155E63;}
+.bitem{display:flex;gap:14px;padding:14px;background:#fff;border-radius:var(--r-lg);margin:0 10px 10px;box-shadow:var(--sh-sm);transition:all .2s;animation:fadeInUp .3s ease both;}
+.bitem:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.bcov-list{width:68px;height:94px;border-radius:8px;flex-shrink:0;display:flex;align-items:flex-end;padding:7px;box-shadow:0 3px 12px rgba(0,0,0,.18);}
+.bcov-list span{font-size:9px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4);line-height:1.3;}
+.binfo{flex:1;min-width:0;}
+.bt{font-size:14px;font-weight:700;margin-bottom:4px;line-height:1.3;}
+.ba{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.bmeta{display:flex;gap:6px;flex-wrap:wrap;}
+.bdg{display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+.bdg-g{background:#ECFDF5;color:#059669;}.bdg-y{background:#FFFBEB;color:#D97706;}.bdg-r{background:#FEF2F2;color:#DC2626;}.bdg-b{background:#F0F9FF;color:#0284C7;}.bdg-p{background:var(--pri-lt);color:#155E63;}.bdg-gr{background:#F3F4F6;color:#6B7280;}
+
+/* BOOK DETAIL */
+.bd-hero{padding:22px 16px;display:flex;gap:18px;align-items:flex-start;}
+.bd-cov{width:108px;height:152px;border-radius:12px;flex-shrink:0;display:flex;align-items:flex-end;padding:10px;box-shadow:0 10px 36px rgba(0,0,0,.22);}
+.bd-cov span{font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.4);line-height:1.3;}
+.bd-info{flex:1;min-width:0;}
+.bd-title{font-size:18px;font-weight:800;line-height:1.3;margin-bottom:7px;}
+.bd-auth{font-size:13px;color:var(--muted);margin-bottom:10px;}
+.bd-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.bd-subj{font-size:13px;color:#155E63;font-weight:600;}
+.bd-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 18px;}
+.btn-act{padding:13px;border-radius:var(--r-md);border:none;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;}
+.btn-act-p{background:linear-gradient(135deg,#155E63,#0F4347);color:#fff;box-shadow:0 4px 14px rgba(21,94,99,.3);}
+.btn-act-s{background:#fff;color:#155E63;border:1.5px solid #155E63;}
+.btn-act-p:hover{transform:translateY(-1px);}.btn-act-s:hover{background:var(--pri-lt);}
+.dsec{background:#fff;margin:0 10px 10px;border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-sm);}
+.dsec-t{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:12px;}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F7F3E8;}
+.drow:last-child{border-bottom:none;padding-bottom:0;}
+.dkey{font-size:13px;color:var(--muted);}
+.dval{font-size:13px;font-weight:600;max-width:55%;text-align:right;}
+.avrow{display:flex;align-items:center;gap:12px;padding:10px 12px;background:#F7F3E8;border-radius:var(--r-md);margin-bottom:8px;}
+.av-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* BROWSE */
+.br-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px;}
+.br-card{border-radius:var(--r-lg);padding:18px 14px;transition:all .25s;overflow:hidden;box-shadow:var(--sh-md);border:none;text-align:left;}
+.br-card:hover{transform:translateY(-4px) scale(1.02);}
+.br-icon{font-size:32px;margin-bottom:10px;display:block;}
+.br-name{font-size:14px;font-weight:800;color:#fff;margin-bottom:3px;}
+.br-cnt{font-size:12px;color:rgba(255,255,255,.65);}
+
+/* ACCOUNT */
+.acc-hero{padding:20px 16px 24px;background:linear-gradient(135deg,#155E63,#0F4347);color:#fff;display:flex;gap:16px;align-items:center;}
+.acc-av{width:62px;height:62px;background:rgba(255,255,255,.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;border:2px solid rgba(255,255,255,.3);flex-shrink:0;}
+.acc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;}
+.acc-stat{background:#fff;border-radius:var(--r-md);padding:14px 10px;text-align:center;box-shadow:var(--sh-sm);}
+.acc-sv{font-size:22px;font-weight:800;color:#155E63;}
+.acc-sl{font-size:10px;color:var(--muted);}
+.list-card{background:#fff;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm);margin:0 10px 12px;}
+.list-hdr{padding:13px 16px;border-bottom:1px solid #F7F3E8;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.05em;}
+.list-item{display:flex;gap:12px;padding:13px 16px;border-bottom:1px solid #F7F3E8;cursor:pointer;transition:background .15s;}
+.list-item:hover{background:#FAFAFA;}
+.list-item:last-child{border-bottom:none;}
+.li-cov{width:42px;height:58px;border-radius:7px;flex-shrink:0;}
+.li-t{font-size:13px;font-weight:700;margin-bottom:3px;line-height:1.3;}
+.li-a{font-size:12px;color:var(--muted);}
+.li-due{font-size:12px;color:#D97706;margin-top:4px;font-weight:500;}
+.empty{text-align:center;padding:60px 24px;}
+.empty-icon{font-size:54px;margin-bottom:14px;opacity:.55;}
+.empty-t{font-size:18px;font-weight:700;margin-bottom:8px;}
+.empty-d{font-size:14px;color:var(--muted);line-height:1.6;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a1a1a;color:#fff;padding:12px 22px;border-radius:999px;font-size:13px;font-weight:500;z-index:2000;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 28px rgba(0,0,0,.25);max-width:90vw;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* RESPONSIVE */
+@media(min-width:768px){
+  #app{max-width:100%;display:flex;}
+  .main-wrap{flex:1;margin-left:240px;}
+  .bnav{display:none !important;}
+  .sidebar{display:flex;}
+  .page{padding-bottom:24px;}
+  .hm-header{padding:28px 28px 36px;}
+  .stats-row{padding:0 20px;margin-top:-22px;gap:14px;}
+  .sec{padding:22px 20px 0;}
+  .bc-sm{width:142px;}
+  .bcov-sm{width:142px;height:196px;}
+  .qa-grid{grid-template-columns:repeat(4,1fr);}
+  .br-grid{grid-template-columns:repeat(3,1fr);padding:18px 20px;}
+  .bitem{margin:0 16px 12px;}
+  .fbar{padding:12px 20px;}
+  .res-top{padding:14px 22px;}
+  .srch-sticky{padding:14px 22px 18px;}
+  .bd-hero{padding:28px 22px;}
+  .dsec{margin:0 16px 12px;}
+  .bd-actions{margin:0 16px 20px;padding:0;}
+  .list-card{margin:0 16px 12px;}
+  .acc-stats{padding:16px 14px;}
+  .topbar{padding:0 22px;height:60px;}
+  .toast{bottom:30px;}
+}
+@media(min-width:1024px){
+  .main-wrap{margin-left:280px;}
+  .sidebar{width:280px;}
+  .br-grid{grid-template-columns:repeat(4,1fr);}
+  .qa-grid{grid-template-columns:repeat(4,1fr);}
+  .bc-sm{width:154px;}
+  .bcov-sm{width:154px;height:214px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand"><div class="sb-logo"><div class="sb-logo-icon">📚</div><div><div class="sb-title">IIITDM OPAC</div></div></div><div class="sb-sub">Central Library</div></div>
+  <nav class="sb-nav">
+    <div class="sb-lbl">MENU</div>
+    <button class="sb-item active" id="snav-home" onclick="go('home')"><span class="sb-icon">🏠</span>Home</button>
+    <button class="sb-item" id="snav-search" onclick="go('search')"><span class="sb-icon">🔍</span>Search</button>
+    <button class="sb-item" id="snav-browse" onclick="go('browse')"><span class="sb-icon">📚</span>Browse</button>
+    <div class="sb-lbl">ACCOUNT</div>
+    <button class="sb-item" id="snav-account" onclick="go('account')"><span class="sb-icon">👤</span>My Account</button>
+    <button class="sb-item" id="snav-collections" onclick="go('collections')"><span class="sb-icon">🔖</span>Collections</button>
+  </nav>
+  <div class="sb-foot"><div class="sb-user"><div class="sb-avatar" id="sb-av">P</div><div><div class="sb-uname" id="sb-name">Student</div><div class="sb-uid" id="sb-id">—</div></div></div></div>
+</aside>
+<div class="main-wrap">
+<div class="page active" id="pg-splash"><div class="sp-wrap"><div class="sp-logo">📚</div><div class="sp-title">IIITDM OPAC</div><div class="sp-sub">Library Search & Discovery</div><div class="sp-inst">IIITDM Jabalpur — Central Library</div><button class="sp-btn" onclick="go('login')">Get Started →</button><div class="sp-feats"><div class="sp-feat"><span style="font-size:26px;">📖</span><div class="sp-ftext">5000+<br>Books</div></div><div class="sp-feat"><span style="font-size:26px;">🔍</span><div class="sp-ftext">Smart<br>Search</div></div><div class="sp-feat"><span style="font-size:26px;">📍</span><div class="sp-ftext">Shelf<br>Locator</div></div><div class="sp-feat"><span style="font-size:26px;">📱</span><div class="sp-ftext">E-Book<br>Access</div></div></div></div></div>
+<div class="page" id="pg-login"><div class="lg-hero"><div class="lg-logo">📚</div><div class="lg-welcome">Welcome Back!</div><div class="lg-desc">Sign in to access the library</div></div><div class="lg-card"><div class="lg-t">Sign In</div><div class="lg-s">Use your institute credentials</div><div class="fg"><label class="flbl">INSTITUTE ID</label><input class="finp" type="text" id="l-id" placeholder="e.g. 2021CSB001" value="2021CSB001"></div><div class="fg"><label class="flbl">PASSWORD</label><input class="finp" type="password" id="l-pw" placeholder="Enter password" value="password"></div><div class="err-msg" id="l-err">Invalid credentials. Please try again.</div><button class="btn-pri" onclick="doLogin()">Sign In →</button><div class="demo-hint"><strong>Demo Credentials (pre-filled, just click Sign In)</strong>Student: 2021CSB001 | password<br>Faculty: FAC001 | password</div></div></div>
+<div class="page" id="pg-home">
+  <div class="hm-header"><div class="hm-top"><div><div class="hm-greet" id="hm-greet">Good morning,</div><div class="hm-name" id="hm-name">Student</div></div><div class="hm-av" id="hm-av" onclick="go('account')">P</div></div><div class="hm-search" onclick="go('search')" style="cursor:pointer;"><span style="font-size:18px;opacity:.7;">🔍</span><span style="font-size:14px;color:rgba(255,255,255,.55);">Search books, authors, subjects…</span></div></div>
+  <div class="stats-row"><div class="stat-card afu"><div class="stat-val">5,240</div><div class="stat-lbl">Total Books</div></div><div class="stat-card afu" style="animation-delay:.05s"><div class="stat-val">3,812</div><div class="stat-lbl">Available</div></div><div class="stat-card afu" style="animation-delay:.1s"><div class="stat-val">24</div><div class="stat-lbl">Subjects</div></div></div>
+  <div class="sec" style="padding-top:20px;"><div class="sec-hdr"><div class="sec-title">Quick Actions</div></div><div class="qa-grid"><button class="qa-card" onclick="go('search')"><span class="qa-icon">🔍</span><div class="qa-name">Search</div><div class="qa-desc">Find any book</div></button><button class="qa-card" onclick="go('browse')"><span class="qa-icon">📚</span><div class="qa-name">Browse</div><div class="qa-desc">By subject</div></button><button class="qa-card" onclick="go('account')"><span class="qa-icon">📋</span><div class="qa-name">My Loans</div><div class="qa-desc">Due dates</div></button><button class="qa-card" onclick="go('collections')"><span class="qa-icon">🔖</span><div class="qa-name">Saved</div><div class="qa-desc">Collections</div></button></div></div>
+  <div class="sec"><div class="sec-hdr"><div class="sec-title">Featured Books</div><button class="sec-link" onclick="showRes('','all')">See all</button></div><div class="bscroll" id="hm-feat"></div></div>
+  <div class="sec"><div class="sec-hdr"><div class="sec-title">New Arrivals</div><button class="sec-link" onclick="showRes('new','new')">See all</button></div><div class="bscroll" id="hm-new"></div></div>
+  <div class="sec" style="padding-bottom:24px;"><div class="sec-hdr"><div class="sec-title">Browse by Subject</div></div><div class="chips" id="hm-subj"></div></div>
+</div>
+<div class="page" id="pg-search"><div class="topbar"><div class="tb-title">Search</div></div><div class="srch-sticky"><div class="srch-box"><input class="srch-inp" type="search" id="s-inp" placeholder="Title, author, keyword…" oninput="onSI()" onkeypress="if(event.key==='Enter')doSrch()"><button class="srch-icon" onclick="doSrch()">🔍</button></div></div><div id="s-sugg" style="padding:8px 14px;"></div><div id="s-def"><div class="sec"><div class="sec-hdr"><div class="sec-title">Popular Subjects</div></div><div class="chips" id="s-subj"></div></div><div class="sec" style="padding-bottom:24px;"><div class="sec-hdr"><div class="sec-title">Recent Searches</div><button class="sec-link" onclick="clearRec()">Clear</button></div><div id="s-rec"></div></div></div></div>
+<div class="page" id="pg-results"><div class="topbar"><button class="tb-back" onclick="back()">←</button><div class="tb-title">Results</div></div><div class="res-top"><div class="res-q" id="res-q">Results</div><div class="res-cnt" id="res-cnt">0 books</div></div><div class="fbar"><button class="fc active" onclick="setF('all',this)">All</button><button class="fc" onclick="setF('available',this)">Available</button><button class="fc" onclick="setF('ebook',this)">E-Books</button><button class="fc" onclick="setF('physical',this)">Physical</button></div><div id="res-list" style="padding-top:6px;"></div></div>
+<div class="page" id="pg-book"><div class="topbar"><button class="tb-back" onclick="back()">←</button><div class="tb-title">Book Details</div><button class="tb-action" id="fav-btn" onclick="togFav()">🤍</button></div><div id="book-content"></div></div>
+<div class="page" id="pg-browse"><div class="topbar"><div class="tb-title">Browse by Subject</div></div><div style="padding:12px 14px 6px;font-size:13px;color:var(--muted);">Explore books by subject area</div><div class="br-grid" id="br-grid"></div></div>
+<div class="page" id="pg-account"><div class="topbar"><div class="tb-title">My Account</div><button class="tb-action" onclick="doLogout()">🚪</button></div><div id="acc-content"></div></div>
+<div class="page" id="pg-collections"><div class="topbar"><div class="tb-title">My Collections</div></div><div id="col-content"></div></div>
+</div>
+<nav class="bnav" id="bnav"><button class="ni active" id="bn-home" onclick="go('home')"><span class="ni-icon">🏠</span><span class="ni-lbl">Home</span></button><button class="ni" id="bn-search" onclick="go('search')"><span class="ni-icon">🔍</span><span class="ni-lbl">Search</span></button><button class="ni" id="bn-browse" onclick="go('browse')"><span class="ni-icon">📚</span><span class="ni-lbl">Browse</span></button><button class="ni" id="bn-account" onclick="go('account')"><span class="ni-icon">👤</span><span class="ni-lbl">Account</span></button></nav>
+<div class="toast" id="toast"></div>
+</div>
+<script>
+const BOOKS=[
+{id:'1',title:'Introduction to Algorithms',authors:['Cormen','Leiserson','Rivest'],subject:'Computer Science',call:'QA76.9.A43 C67',fmt:'both',yr:2022,copies:5,avail:3,c:['#1E3A5F','#2563EB']},
+{id:'2',title:'The Art of Computer Programming',authors:['Donald Knuth'],subject:'Computer Science',call:'QA76.6 .K64',fmt:'physical',yr:2019,copies:2,avail:2,c:['#1A1A2E','#7C3AED']},
+{id:'3',title:'Clean Code',authors:['Robert C. Martin'],subject:'Software Engineering',call:'QA76.76.Q35 M37',fmt:'both',yr:2020,copies:4,avail:4,c:['#134E4A','#14B8A6']},
+{id:'4',title:'Design Patterns: GoF',authors:['Gamma','Helm'],subject:'Software Engineering',call:'QA76.64 .D47',fmt:'physical',yr:2021,copies:3,avail:1,c:['#3D1A78','#7C3AED']},
+{id:'5',title:'Computer Networks',authors:['Andrew Tanenbaum'],subject:'Computer Science',call:'TK5105.5 .T36',fmt:'physical',yr:2021,copies:6,avail:5,c:['#0C2340','#0EA5E9']},
+{id:'6',title:'Artificial Intelligence: A Modern Approach',authors:['Russell','Norvig'],subject:'Artificial Intelligence',call:'Q335 .R86',fmt:'both',yr:2020,copies:4,avail:2,c:['#1C1917','#D97706']},
+{id:'7',title:'Deep Learning',authors:['Goodfellow','Bengio'],subject:'Artificial Intelligence',call:'Q325.5 .G66',fmt:'ebook',yr:2020,copies:0,avail:0,c:['#0F172A','#6366F1']},
+{id:'8',title:'Database System Concepts',authors:['Silberschatz','Korth'],subject:'Computer Science',call:'QA76.9.D3 K67',fmt:'physical',yr:2022,copies:8,avail:6,c:['#052E16','#16A34A']},
+{id:'9',title:'Operating System Concepts',authors:['Silberschatz','Galvin'],subject:'Computer Science',call:'QA76.76.O63 S55',fmt:'physical',yr:2021,copies:7,avail:5,c:['#172554','#3B82F6']},
+{id:'10',title:'Computer Organization and Architecture',authors:['William Stallings'],subject:'Computer Science',call:'QA76.9.A73 S73',fmt:'physical',yr:2022,copies:5,avail:3,c:['#1E1B4B','#8B5CF6']},
+{id:'11',title:'Electronic Devices and Circuit Theory',authors:['Boylestad','Nashelsky'],subject:'Electronics',call:'TK7816 .B68',fmt:'physical',yr:2021,copies:6,avail:4,c:['#431407','#EA580C']},
+{id:'12',title:'Signals and Systems',authors:['Oppenheim','Willsky'],subject:'Electronics',call:'TK5102.5 .O66',fmt:'physical',yr:2020,copies:4,avail:2,c:['#1A2E05','#65A30D']},
+{id:'13',title:'Digital Design',authors:['Morris Mano'],subject:'Electronics',call:'TK7868.D5 M36',fmt:'both',yr:2021,copies:5,avail:5,c:['#450A0A','#DC2626']},
+{id:'14',title:'VLSI Design Principles',authors:['John Uyemura'],subject:'Electronics',call:'TK7874.75 .U94',fmt:'physical',yr:2020,copies:3,avail:1,c:['#0C1445','#4F46E5']},
+{id:'15',title:'Advanced Engineering Mathematics',authors:['Erwin Kreyszig'],subject:'Mathematics',call:'TA330 .K74',fmt:'both',yr:2022,copies:8,avail:6,c:['#14532D','#22C55E']},
+{id:'16',title:'Linear Algebra and Its Applications',authors:['Gilbert Strang'],subject:'Mathematics',call:'QA184.2 .S77',fmt:'physical',yr:2021,copies:5,avail:4,c:['#0F172A','#38BDF8']},
+{id:'17',title:'Probability and Statistics',authors:['Walpole','Myers'],subject:'Mathematics',call:'QA273 .W35',fmt:'physical',yr:2020,copies:6,avail:5,c:['#1C1917','#A78BFA']},
+{id:'18',title:'Calculus: Early Transcendentals',authors:['James Stewart'],subject:'Mathematics',call:'QA303.2 .S75',fmt:'both',yr:2021,copies:7,avail:5,c:['#7F1D1D','#F87171']},
+{id:'19',title:'University Physics',authors:['Young','Freedman'],subject:'Physics',call:'QC21.3 .Y68',fmt:'physical',yr:2020,copies:6,avail:5,c:['#0C2340','#60A5FA']},
+{id:'20',title:'Introduction to Quantum Mechanics',authors:['David Griffiths'],subject:'Physics',call:'QC174.12 .G75',fmt:'physical',yr:2021,copies:4,avail:2,c:['#1E3A5F','#93C5FD']},
+{id:'21',title:'Engineering Management',authors:['Fraidoon Mazda'],subject:'Management',call:'T56.8 .M39',fmt:'physical',yr:2019,copies:3,avail:3,c:['#134E4A','#34D399']},
+{id:'22',title:'Project Management',authors:['Harold Kerzner'],subject:'Management',call:'HD69.P75 K47',fmt:'both',yr:2022,copies:4,avail:3,c:['#1C1917','#FBBF24']},
+{id:'23',title:'The Design of Everyday Things',authors:['Don Norman'],subject:'Design',call:'TS171.4 .N67',fmt:'both',yr:2020,copies:3,avail:3,c:['#1E3A5F','#F472B6']},
+{id:'24',title:'Human-Computer Interaction',authors:['Dix','Finlay'],subject:'Design',call:'QA76.9.H85 D59',fmt:'physical',yr:2021,copies:2,avail:2,c:['#3D1A78','#A78BFA']},
+{id:'25',title:'Engineering Mechanics: Statics',authors:['R.C. Hibbeler'],subject:'Mechanical',call:'TA351 .H52',fmt:'physical',yr:2022,copies:5,avail:4,c:['#431407','#FB923C']},
+{id:'26',title:'Thermodynamics: An Engineering Approach',authors:['Cengel','Boles'],subject:'Mechanical',call:'TJ265 .C45',fmt:'physical',yr:2021,copies:4,avail:3,c:['#7F1D1D','#EF4444']},
+];
+const USERS=[
+{iid:'2021CSB001',name:'Payal Priyadarshini',role:'student',pw:'password',dept:'Computer Science and Design'},
+{iid:'FAC001',name:'Dr. Ramesh Kumar',role:'faculty',pw:'password',dept:'Computer Science and Engineering'},
+{iid:'2022ECB001',name:'Arjun Sharma',role:'student',pw:'password',dept:'Electronics and Communication'},
+];
+const SC={'Computer Science':['#1E3A5F','#2563EB'],'Software Engineering':['#134E4A','#14B8A6'],'Artificial Intelligence':['#1C1917','#D97706'],'Electronics':['#431407','#EA580C'],'Mathematics':['#14532D','#22C55E'],'Physics':['#0C2340','#60A5FA'],'Management':['#1C1917','#FBBF24'],'Design':['#1E3A5F','#F472B6'],'Mechanical':['#431407','#FB923C']};
+const EM={'Computer Science':'💻','Software Engineering':'⚙️','Artificial Intelligence':'🤖','Electronics':'⚡','Mathematics':'📐','Physics':'🔭','Management':'📊','Design':'🎨','Mechanical':'🔧'};
+let cUser=null,cPage='splash',cBook=null,aRes=[],cF='all';
+let recent=JSON.parse(localStorage.getItem('o_rec')||'[]');
+let favs=JSON.parse(localStorage.getItem('o_fav')||'[]');
+let hist=['splash'];
+function go(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('pg-'+p);if(el)el.classList.add('active');
+  updateNav(p);if(p!==cPage)hist.push(p);cPage=p;
+  if(p==='home')iHome();else if(p==='search')iSearch();else if(p==='browse')iBrowse();else if(p==='account')iAccount();else if(p==='collections')iCollections();
+  window.scrollTo(0,0);
+}
+function back(){if(hist.length>1){hist.pop();go(hist[hist.length-1]);}else go('home');}
+function updateNav(p){
+  document.querySelectorAll('.ni,.sb-item').forEach(i=>i.classList.remove('active'));
+  const bm={home:'bn-home',search:'bn-search',browse:'bn-browse',account:'bn-account'};
+  const sm={home:'snav-home',search:'snav-search',browse:'snav-browse',account:'snav-account',collections:'snav-collections'};
+  if(bm[p])document.getElementById(bm[p])?.classList.add('active');
+  if(sm[p])document.getElementById(sm[p])?.classList.add('active');
+  const noN=['splash','login'];
+  document.getElementById('bnav').style.display=noN.includes(p)?'none':'';
+  document.getElementById('sidebar').style.display=noN.includes(p)?'none':'';
+}
+function doLogin(){
+  const id=document.getElementById('l-id').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  const u=USERS.find(x=>x.iid===id&&x.pw===pw);
+  const err=document.getElementById('l-err');
+  if(u){cUser=u;localStorage.setItem('o_user',JSON.stringify(u));err.classList.remove('show');go('home');toast('Welcome, '+u.name.split(' ')[0]+'! 👋');}
+  else err.classList.add('show');
+}
+function doLogout(){cUser=null;localStorage.removeItem('o_user');go('splash');toast('Signed out');}
+function iHome(){
+  if(!cUser){go('login');return;}
+  const h=new Date().getHours();
+  document.getElementById('hm-greet').textContent=h<12?'Good morning,':h<17?'Good afternoon,':'Good evening,';
+  const fn=cUser.name.split(' ')[0];
+  document.getElementById('hm-name').textContent=fn+(cUser.role==='faculty'?' 👨‍🏫':' 👋');
+  document.getElementById('hm-av').textContent=fn[0];
+  document.getElementById('sb-av').textContent=fn[0];
+  document.getElementById('sb-name').textContent=cUser.name.split(' ').slice(0,2).join(' ');
+  document.getElementById('sb-id').textContent=cUser.iid;
+  const feat=[...BOOKS].sort(()=>.5-Math.random()).slice(0,8);
+  document.getElementById('hm-feat').innerHTML=feat.map((b,i)=>bcSm(b,i)).join('');
+  const nw=[...BOOKS].sort((a,b)=>b.yr-a.yr).slice(0,7);
+  document.getElementById('hm-new').innerHTML=nw.map((b,i)=>bcSm(b,i)).join('');
+  const subjs=[...new Set(BOOKS.map(b=>b.subject))];
+  document.getElementById('hm-subj').innerHTML=subjs.map(s=>'<button class="chip" onclick="showRes(\\''+s+'\\',\\'subject\\')">'+( EM[s]||'📖')+' '+s+'</button>').join('');
+}
+function bcSm(b,i){return '<div class="bc-sm" onclick="showBook(\\''+b.id+'\\')" style="animation-delay:'+(i*.05)+'s"><div class="bcov-sm" style="background:linear-gradient(160deg,'+b.c[0]+','+b.c[1]+')"><span class="bcov-lbl">'+tr(b.title,28)+'</span></div><div class="bc-title">'+b.title+'</div><div class="bc-auth">'+b.authors[0]+'</div></div>';}
+function iSearch(){rSubj('s-subj');rRec();setTimeout(()=>document.getElementById('s-inp')?.focus(),100);}
+function onSI(){
+  const q=document.getElementById('s-inp').value.trim();
+  const sg=document.getElementById('s-sugg');const df=document.getElementById('s-def');
+  if(q.length<2){sg.innerHTML='';df.style.display='';return;}
+  df.style.display='none';
+  const m=BOOKS.filter(b=>b.title.toLowerCase().includes(q.toLowerCase())||b.authors.join(' ').toLowerCase().includes(q.toLowerCase())||b.subject.toLowerCase().includes(q.toLowerCase())).slice(0,6);
+  sg.innerHTML=m.length?m.map(b=>'<button class="sug-item" onclick="showBook(\\''+b.id+'\\')"><span style="color:#155E63;font-size:18px;">🔍</span><div style="flex:1;min-width:0;"><span class="sug-t">'+b.title+'</span><div class="sug-s">'+b.subject+' · '+b.authors[0]+'</div></div><span style="color:#D4D4D4;">↗</span></button>').join(''):'<div class="empty"><div class="empty-icon">🔍</div><div class="empty-t">No matches found</div><div class="empty-d">Try a different keyword</div></div>';
+}
+function doSrch(){const q=document.getElementById('s-inp').value.trim();if(!q)return;sRec(q);showRes(q,'query');}
+function sRec(q){recent=[q,...recent.filter(r=>r!==q)].slice(0,6);localStorage.setItem('o_rec',JSON.stringify(recent));}
+function clearRec(){recent=[];localStorage.removeItem('o_rec');rRec();}
+function rRec(){
+  const el=document.getElementById('s-rec');
+  if(!recent.length){el.innerHTML='<div style="text-align:center;color:var(--light);font-size:13px;padding:14px;">No recent searches</div>';return;}
+  el.innerHTML='<div style="background:#fff;border-radius:16px;padding:8px;box-shadow:var(--sh-sm);">'+recent.map(r=>'<button onclick="qSrch(\\''+r+'\\')" style="width:100%;display:flex;align-items:center;gap:14px;padding:12px;background:none;border:none;cursor:pointer;font-family:Inter,sans-serif;text-align:left;border-radius:8px;" onmouseover="this.style.background=\\'#F8FBFB\\'" onmouseout="this.style.background=\\'none\\'"><span style="color:#A3A3A3;">🕐</span><span style="font-size:14px;color:#252525;">'+r+'</span><span style="color:#D4D4D4;margin-left:auto;">↗</span></button>').join('')+'</div>';
+}
+function qSrch(q){document.getElementById('s-inp').value=q;sRec(q);showRes(q,'query');}
+function rSubj(id){const s=[...new Set(BOOKS.map(b=>b.subject))];document.getElementById(id).innerHTML=s.map(s=>'<button class="chip" onclick="showRes(\\''+s+'\\',\\'subject\\')">'+( EM[s]||'📖')+' '+s+'</button>').join('');}
+function showRes(q,type){
+  cF='all';
+  if(type==='subject'){aRes=BOOKS.filter(b=>b.subject===q);document.getElementById('res-q').textContent=(EM[q]||'📖')+' '+q;}
+  else if(type==='new'){aRes=[...BOOKS].sort((a,b)=>b.yr-a.yr);document.getElementById('res-q').textContent='🆕 New Arrivals';}
+  else if(type==='all'){aRes=[...BOOKS];document.getElementById('res-q').textContent='📚 All Books';}
+  else{const ql=q.toLowerCase();aRes=BOOKS.filter(b=>b.title.toLowerCase().includes(ql)||b.authors.join(' ').toLowerCase().includes(ql)||b.subject.toLowerCase().includes(ql)||b.call.toLowerCase().includes(ql));document.getElementById('res-q').textContent='🔍 "'+q+'"';}
+  document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));document.querySelector('.fc').classList.add('active');
+  rRes();go('results');
+}
+function setF(f,btn){cF=f;document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));btn.classList.add('active');rRes();}
+function rRes(){
+  let b=aRes;
+  if(cF==='available')b=b.filter(x=>x.avail>0);
+  else if(cF==='ebook')b=b.filter(x=>['ebook','both'].includes(x.fmt));
+  else if(cF==='physical')b=b.filter(x=>['physical','both'].includes(x.fmt));
+  document.getElementById('res-cnt').textContent=b.length+' book'+(b.length!==1?'s':'')+' found';
+  const el=document.getElementById('res-list');
+  if(!b.length){el.innerHTML='<div class="empty"><div class="empty-icon">📭</div><div class="empty-t">No books found</div><div class="empty-d">Try different keywords or filters</div></div>';return;}
+  el.innerHTML=b.map((x,i)=>{
+    const av=x.avail>0?'<span class="bdg bdg-g">✓ Available ('+x.avail+')</span>':'<span class="bdg bdg-r">✗ Unavailable</span>';
+    const fm=x.fmt==='ebook'?'<span class="bdg bdg-b">📱 E-Book</span>':x.fmt==='both'?'<span class="bdg bdg-p">📖📱 Both</span>':'<span class="bdg bdg-gr">📖 Physical</span>';
+    return '<div class="bitem" onclick="showBook(\\''+x.id+'\\')" style="animation-delay:'+(i*.04)+'s"><div class="bcov-list" style="background:linear-gradient(160deg,'+x.c[0]+','+x.c[1]+')"><span>'+tr(x.title,18)+'</span></div><div class="binfo"><div class="bt">'+x.title+'</div><div class="ba">'+x.authors.join(', ')+' · '+x.yr+'</div><div class="bmeta">'+av+fm+'</div><div style="font-size:11px;color:var(--light);margin-top:5px;">'+x.subject+'</div></div></div>';
+  }).join('');
+}
+function showBook(id){
+  cBook=BOOKS.find(b=>b.id===id);if(!cBook)return;
+  const b=cBook;
+  document.getElementById('fav-btn').textContent=favs.includes(b.id)?'❤️':'🤍';
+  const avS=b.avail>2?'available':b.avail>0?'limited':'unavailable';
+  const avBdg=avS==='available'?'<span class="bdg bdg-g">✓ Available</span>':avS==='limited'?'<span class="bdg bdg-y">⚠ Limited</span>':'<span class="bdg bdg-r">✗ Unavailable</span>';
+  const fmBdg=b.fmt==='ebook'?'<span class="bdg bdg-b">📱 E-Book</span>':b.fmt==='both'?'<span class="bdg bdg-p">📖📱 Both</span>':'<span class="bdg bdg-gr">📖 Physical</span>';
+  const sec=b.subject.substring(0,2).toUpperCase();
+  const row=Math.ceil(parseInt(b.id)/5);
+  const bay=((parseInt(b.id)-1)%5)+1;
+  document.getElementById('book-content').innerHTML=
+    '<div class="bd-hero"><div class="bd-cov" style="background:linear-gradient(160deg,'+b.c[0]+','+b.c[1]+')"><span>'+tr(b.title,40)+'</span></div><div class="bd-info"><div class="bd-title">'+b.title+'</div><div class="bd-auth">by '+b.authors.join(', ')+'</div><div class="bd-badges">'+avBdg+fmBdg+'</div><div class="bd-subj">'+(EM[b.subject]||'')+' '+b.subject+'</div></div></div>'+
+    '<div class="bd-actions">'+(b.avail>0?'<button class="btn-act btn-act-p" onclick="toast(\\'Loan request submitted! 📚\\')">📋 Request Loan</button>':'<button class="btn-act btn-act-s" onclick="toast(\\'Added to hold queue ✓\\')">⏳ Place Hold</button>')+(b.fmt!=='physical'?'<button class="btn-act btn-act-s" onclick="toast(\\'Opening digital access… 📱\\')">📱 Read Online</button>':'<button class="btn-act btn-act-s" onclick="toast(\\'📍 Floor 2 · Sec '+sec+' · Row '+row+'\\')">📍 Find Shelf</button>')+'</div>'+
+    '<div class="dsec"><div class="dsec-t">BOOK DETAILS</div><div class="drow"><span class="dkey">Call Number</span><span class="dval" style="font-family:monospace;font-size:12px;">'+b.call+'</span></div><div class="drow"><span class="dkey">Published</span><span class="dval">'+b.yr+'</span></div><div class="drow"><span class="dkey">Total Copies</span><span class="dval">'+b.copies+'</span></div><div class="drow"><span class="dkey">Available Now</span><span class="dval" style="color:'+(b.avail>0?'#059669':'#DC2626')+';font-weight:800;">'+b.avail+' copies</span></div><div class="drow"><span class="dkey">Format</span><span class="dval">'+(b.fmt==='both'?'Physical + E-Book':b.fmt==='ebook'?'E-Book Only':'Physical Only')+'</span></div><div class="drow"><span class="dkey">Subject</span><span class="dval">'+b.subject+'</span></div></div>'+
+    '<div class="dsec"><div class="dsec-t">AVAILABILITY</div><div class="avrow"><div class="av-dot" style="background:'+(b.avail>2?'#22C55E':b.avail>0?'#F59E0B':'#EF4444')+'"></div><div style="flex:1;"><div style="font-size:13px;font-weight:700;">Central Library — Main Stack</div><div style="font-size:12px;color:var(--muted);">'+b.avail+' of '+b.copies+' copies available</div></div></div>'+(b.fmt!=='physical'?'<div class="avrow"><div class="av-dot" style="background:#22C55E"></div><div><div style="font-size:13px;font-weight:700;">Digital Access</div><div style="font-size:12px;color:var(--muted);">Available online — unlimited</div></div></div>':'')+'</div>'+
+    '<div class="dsec" style="margin-bottom:28px;"><div class="dsec-t">SHELF LOCATION</div><div style="background:#F7F3E8;border-radius:10px;padding:16px;text-align:center;"><div style="font-size:28px;margin-bottom:8px;">📍</div><div style="font-size:16px;font-weight:800;color:#155E63;margin-bottom:4px;">Floor 2 · Section '+sec+'</div><div style="font-size:13px;color:var(--muted);">Row '+row+' · Bay '+bay+' · Shelf A</div><div style="font-size:12px;color:var(--light);margin-top:6px;font-family:monospace;">'+b.call+'</div></div></div>';
+  hist.push('results');go('book');
+}
+function togFav(){
+  if(!cBook)return;
+  const i=favs.indexOf(cBook.id);
+  if(i===-1){favs.push(cBook.id);document.getElementById('fav-btn').textContent='❤️';toast('Added to favorites ❤️');}
+  else{favs.splice(i,1);document.getElementById('fav-btn').textContent='🤍';toast('Removed from favorites');}
+  localStorage.setItem('o_fav',JSON.stringify(favs));
+}
+function iBrowse(){
+  const s=[...new Set(BOOKS.map(b=>b.subject))];
+  document.getElementById('br-grid').innerHTML=s.map((x,i)=>{const cnt=BOOKS.filter(b=>b.subject===x).length;const cl=SC[x]||['#1E3A5F','#6366F1'];return '<button class="br-card" style="background:linear-gradient(160deg,'+cl[0]+','+cl[1]+');animation:fadeInUp .4s ease '+(i*.05)+'s both" onclick="showRes(\\''+x+'\\',\\'subject\\')"><span class="br-icon">'+(EM[x]||'📚')+'</span><div class="br-name">'+x+'</div><div class="br-cnt">'+cnt+' books</div></button>';}).join('');
+}
+function iAccount(){
+  if(!cUser){go('login');return;}
+  const u=cUser;const mf=BOOKS.filter(b=>favs.includes(b.id));const loans=BOOKS.slice(0,2);
+  const dd=()=>{const d=new Date();d.setDate(d.getDate()+Math.floor(Math.random()*20)+5);return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});};
+  document.getElementById('acc-content').innerHTML=
+    '<div class="acc-hero"><div class="acc-av">'+u.name[0]+'</div><div><div style="font-size:18px;font-weight:800;">'+u.name+'</div><div style="font-size:13px;opacity:.75;">'+u.iid+' · '+u.role.charAt(0).toUpperCase()+u.role.slice(1)+'</div><div style="font-size:12px;opacity:.5;margin-top:2px;">'+u.dept+'</div></div></div>'+
+    '<div class="acc-stats"><div class="acc-stat"><div class="acc-sv">2</div><div class="acc-sl">Active Loans</div></div><div class="acc-stat"><div class="acc-sv">'+mf.length+'</div><div class="acc-sl">Favorites</div></div><div class="acc-stat"><div class="acc-sv">0</div><div class="acc-sl">Overdue</div></div></div>'+
+    '<div class="list-card"><div class="list-hdr">CURRENT LOANS</div>'+loans.map(b=>'<div class="list-item" onclick="showBook(\\''+b.id+'\\')"><div class="li-cov" style="background:linear-gradient(160deg,'+b.c[0]+','+b.c[1]+')"></div><div><div class="li-t">'+b.title+'</div><div class="li-a">'+b.authors[0]+'</div><div class="li-due">Due: '+dd()+'</div></div></div>').join('')+'<div style="padding:12px 16px;text-align:center;font-size:13px;color:#155E63;font-weight:600;cursor:pointer;" onclick="toast(\\'Only 2 active loans\\')">View all →</div></div>'+
+    (mf.length?'<div class="list-card"><div class="list-hdr">MY FAVORITES ❤️</div>'+mf.map(b=>'<div class="list-item" onclick="showBook(\\''+b.id+'\\')"><div class="li-cov" style="background:linear-gradient(160deg,'+b.c[0]+','+b.c[1]+')"></div><div><div class="li-t">'+b.title+'</div><div class="li-a">'+b.authors[0]+'</div></div></div>').join('')+'</div>':'')+
+    '<div style="padding:4px 10px 28px;"><button onclick="doLogout()" style="width:100%;padding:14px;background:#fff;color:#DC2626;border:1.5px solid #FEE2E2;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">🚪 Sign Out</button></div>';
+}
+function iCollections(){
+  const mf=BOOKS.filter(b=>favs.includes(b.id));
+  document.getElementById('col-content').innerHTML='<div style="padding:14px 10px;"><div class="list-card"><div class="list-hdr" style="display:flex;justify-content:space-between;"><span>❤️ FAVORITES</span><span style="font-size:12px;color:var(--muted);font-weight:400;">'+mf.length+' books</span></div>'+(mf.length?mf.map(b=>'<div class="list-item" onclick="showBook(\\''+b.id+'\\')"><div class="li-cov" style="background:linear-gradient(160deg,'+b.c[0]+','+b.c[1]+')"></div><div><div class="li-t">'+b.title+'</div><div class="li-a">'+b.authors[0]+'</div></div></div>').join(''):'<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">No favorites yet. Tap ❤️ on any book!</div>')+'</div><div style="background:#fff;border-radius:var(--r-lg);padding:24px;text-align:center;box-shadow:var(--sh-sm);"><div style="font-size:36px;margin-bottom:12px;">📂</div><div style="font-size:15px;font-weight:800;margin-bottom:8px;">Create Collection</div><div style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">Organize books into custom reading lists</div><button onclick="toast(\\'Feature coming soon!\\')" style="padding:12px 26px;background:linear-gradient(135deg,#155E63,#0F4347);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">+ New Collection</button></div></div>';
+}
+function tr(s,n){return s.length>n?s.substring(0,n)+'…':s;}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+document.addEventListener('DOMContentLoaded',()=>{
+  const sv=localStorage.getItem('o_user');
+  if(sv){cUser=JSON.parse(sv);go('home');}else go('splash');
+  document.addEventListener('keypress',e=>{if(e.key==='Enter'&&cPage==='login')doLogin();});
+});
+</script>
+</body>
 </html>
