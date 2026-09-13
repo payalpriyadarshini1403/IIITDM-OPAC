@@ -100,6 +100,17 @@ export interface Post {
   link_url?: string;
   created_at: string;
   likes: number;
+  comment_count?: number;
+}
+
+export interface Comment {
+  id: string;
+  post_id: string;
+  author_id: string;
+  author_name?: string;
+  author_role?: string;
+  content: string;
+  created_at: string;
 }
 
 export interface ReadingHistory {
@@ -505,6 +516,7 @@ export async function getFeedPosts(): Promise<Post[]> {
   const db = getDB();
   return db.posts.sort((a, b) => b.created_at.localeCompare(a.created_at)).map(p => {
     const author = db.users.find(u => u.id === p.author_id);
+    const comment_count = db.comments.filter(c => c.post_id === p.id).length;
     return {
       id: p.id,
       author_id: p.author_id,
@@ -514,7 +526,8 @@ export async function getFeedPosts(): Promise<Post[]> {
       content: p.content,
       link_url: p.link_url,
       created_at: p.created_at,
-      likes: p.likes
+      likes: p.likes,
+      comment_count,
     };
   });
 }
@@ -539,6 +552,37 @@ export async function likePost(postId: string): Promise<void> {
     post.likes += 1;
     persist();
   }
+}
+
+export async function getComments(postId: string): Promise<Comment[]> {
+  const db = getDB();
+  return db.comments
+    .filter(c => c.post_id === postId)
+    .sort((a, b) => a.created_at.localeCompare(b.created_at))
+    .map(c => {
+      const author = db.users.find(u => u.id === c.author_id);
+      return {
+        id: c.id,
+        post_id: c.post_id,
+        author_id: c.author_id,
+        author_name: author?.name,
+        author_role: author?.role,
+        content: c.content,
+        created_at: c.created_at,
+      };
+    });
+}
+
+export async function addComment(postId: string, authorId: string, content: string): Promise<void> {
+  const db = getDB();
+  db.comments.push({
+    id: uid(),
+    post_id: postId,
+    author_id: authorId,
+    content,
+    created_at: new Date().toISOString(),
+  });
+  persist();
 }
 
 export async function getAllSubjects(): Promise<string[]> {

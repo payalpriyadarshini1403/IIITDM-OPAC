@@ -49,6 +49,9 @@ export interface DbPost {
   id: string; author_id: string; content: string;
   link_url?: string; created_at: string; likes: number;
 }
+export interface DbComment {
+  id: string; post_id: string; author_id: string; content: string; created_at: string;
+}
 
 export interface AppDB {
   books: DbBook[];
@@ -62,6 +65,7 @@ export interface AppDB {
   reviews: DbReview[];
   reading_history: DbReadingHistory[];
   posts: DbPost[];
+  comments: DbComment[];
 }
 
 // ─── Seed Data ─────────────────────────────────────────────────────────────────
@@ -148,6 +152,11 @@ const SEED_DATA: AppDB = {
     { id:'p2', author_id:'u3', content:'Created a new public collection for everyone preparing for software engineering interviews. Algorithms and System Design books are included.', link_url:'', created_at:'2026-09-10T14:30:00', likes:8 },
     { id:'p3', author_id:'u2', content:'Reminder: The deadline for submitting your research paper drafts is approaching. Make sure to properly cite your sources using the IEEE format.', link_url:'', created_at:'2026-09-05T11:15:00', likes:22 }
   ],
+  comments: [
+    { id:'cm1', post_id:'p1', author_id:'u1', content:'Thank you Professor! I just reserved it.', created_at:'2026-09-12T10:30:00' },
+    { id:'cm2', post_id:'p1', author_id:'u3', content:'Great recommendation! Already in my reading list 📚', created_at:'2026-09-12T11:00:00' },
+    { id:'cm3', post_id:'p3', author_id:'u1', content:'What citation tool would you recommend for IEEE format?', created_at:'2026-09-05T12:00:00' },
+  ],
 };
 
 // ─── Store ─────────────────────────────────────────────────────────────────────
@@ -164,6 +173,10 @@ function getStore(): AppDB {
       // Migration: Ensure posts exist
       if (!parsed.posts) {
         parsed.posts = SEED_DATA.posts;
+      }
+      // Migration: Ensure comments exist
+      if (!parsed.comments) {
+        parsed.comments = SEED_DATA.comments;
       }
       // Migration: Ensure users have social fields
       if (parsed.users) {
