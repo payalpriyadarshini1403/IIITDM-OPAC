@@ -20,6 +20,7 @@ export interface DbLocation {
 export interface DbUser {
   id: string; name: string; institute_id: string; role: string;
   email: string; password: string; avatar_url: string;
+  bio?: string; department?: string; skills?: string[]; interests?: string[];
 }
 export interface DbLoan {
   id: string; user_id: string; book_id: string; issued_date: string;
@@ -44,6 +45,10 @@ export interface DbReview {
 export interface DbReadingHistory {
   id: string; user_id: string; book_id: string; opened_at: string;
 }
+export interface DbPost {
+  id: string; author_id: string; content: string;
+  link_url?: string; created_at: string; likes: number;
+}
 
 export interface AppDB {
   books: DbBook[];
@@ -56,6 +61,7 @@ export interface AppDB {
   recommendations: DbRecommendation[];
   reviews: DbReview[];
   reading_history: DbReadingHistory[];
+  posts: DbPost[];
 }
 
 // ─── Seed Data ─────────────────────────────────────────────────────────────────
@@ -94,9 +100,9 @@ const SEED_DATA: AppDB = {
     { book_id:'b15', library:'IIITDM Central Library', floor:'1st Floor', section:'Design & Arts', shelf_row:'D1', bay:'B3', grid_row:3, grid_col:3 },
   ],
   users: [
-    { id:'u1', name:'Payal Priyadarshini', institute_id:'MDes2026001', role:'student', email:'payal@iiitdmj.ac.in', password:'12345', avatar_url:'' },
-    { id:'u2', name:'Dr. Ashish Verma', institute_id:'FAC2020003', role:'faculty', email:'ashish@iiitdmj.ac.in', password:'12345', avatar_url:'' },
-    { id:'u3', name:'Ravi Kumar', institute_id:'BTech2024015', role:'student', email:'ravi@iiitdmj.ac.in', password:'12345', avatar_url:'' },
+    { id:'u1', name:'Payal Priyadarshini', institute_id:'MDes2026001', role:'student', email:'payal@iiitdmj.ac.in', password:'12345', avatar_url:'', bio:'Design enthusiast and UI/UX learner. Passionate about making technology accessible.', department:'Computer Science and Design', skills:['Figma','React','User Research'], interests:['HCI','Typography','Psychology'] },
+    { id:'u2', name:'Dr. Ashish Verma', institute_id:'FAC2020003', role:'faculty', email:'ashish@iiitdmj.ac.in', password:'12345', avatar_url:'', bio:'Professor of HCI. Focus on accessible interfaces.', department:'Computer Science and Engineering', skills:['HCI','Usability Testing','System Design'], interests:['Research','Teaching','Accessibility'] },
+    { id:'u3', name:'Ravi Kumar', institute_id:'BTech2024015', role:'student', email:'ravi@iiitdmj.ac.in', password:'12345', avatar_url:'', bio:'Competitive programmer and aspiring software engineer.', department:'Computer Science and Engineering', skills:['C++','Python','Algorithms'], interests:['Open Source','Machine Learning'] },
   ],
   loans: [
     { id:'l1', user_id:'u1', book_id:'b1', issued_date:'2026-08-20', due_date:'2026-09-20', returned_date:null, status:'active' },
@@ -136,6 +142,11 @@ const SEED_DATA: AppDB = {
     { id:'rh4', user_id:'u1', book_id:'b9', opened_at:'2026-09-01T11:00:00' },
     { id:'rh5', user_id:'u1', book_id:'b6', opened_at:'2026-09-05T16:00:00' },
     { id:'rh6', user_id:'u1', book_id:'b14', opened_at:'2026-09-08T13:00:00' },
+  ],
+  posts: [
+      { id:'p1', author_id:'u2', content:'Just added some excellent new books on Human-Computer Interaction to the library. Highly recommend checking out "Don\'t Make Me Think" for your upcoming projects!', link_url:'https://iiitdm.ac.in/library/new-arrivals', created_at:'2026-09-12T09:00:00', likes:14 },
+    { id:'p2', author_id:'u3', content:'Created a new public collection for everyone preparing for software engineering interviews. Algorithms and System Design books are included.', link_url:'', created_at:'2026-09-10T14:30:00', likes:8 },
+    { id:'p3', author_id:'u2', content:'Reminder: The deadline for submitting your research paper drafts is approaching. Make sure to properly cite your sources using the IEEE format.', link_url:'', created_at:'2026-09-05T11:15:00', likes:22 }
   ],
 };
 

@@ -84,6 +84,22 @@ export interface User {
   role: 'student' | 'faculty' | 'guest';
   email: string;
   avatar_url: string;
+  bio?: string;
+  department?: string;
+  skills?: string[];
+  interests?: string[];
+}
+
+export interface Post {
+  id: string;
+  author_id: string;
+  author_name?: string;
+  author_role?: string;
+  author_avatar?: string;
+  content: string;
+  link_url?: string;
+  created_at: string;
+  likes: number;
 }
 
 export interface ReadingHistory {
@@ -468,7 +484,61 @@ export async function getUserById(id: string): Promise<User | undefined> {
   const db = getDB();
   const u = db.users.find(u => u.id === id);
   if (!u) return undefined;
-  return { id: u.id, name: u.name, institute_id: u.institute_id, role: u.role as User['role'], email: u.email, avatar_url: u.avatar_url };
+  return { id: u.id, name: u.name, institute_id: u.institute_id, role: u.role as User['role'], email: u.email, avatar_url: u.avatar_url, bio: u.bio, department: u.department, skills: u.skills, interests: u.interests };
+}
+
+export async function updateUserProfile(id: string, updates: Partial<User>): Promise<void> {
+  const db = getDB();
+  const u = db.users.find(u => u.id === id);
+  if (u) {
+    if (updates.bio !== undefined) u.bio = updates.bio;
+    if (updates.department !== undefined) u.department = updates.department;
+    if (updates.skills !== undefined) u.skills = updates.skills;
+    if (updates.interests !== undefined) u.interests = updates.interests;
+    if (updates.avatar_url !== undefined) u.avatar_url = updates.avatar_url;
+    persist();
+  }
+}
+
+// ─── Posts (Social Feed) ────────────────────────────────────────────────────────
+export async function getFeedPosts(): Promise<Post[]> {
+  const db = getDB();
+  return db.posts.sort((a, b) => b.created_at.localeCompare(a.created_at)).map(p => {
+    const author = db.users.find(u => u.id === p.author_id);
+    return {
+      id: p.id,
+      author_id: p.author_id,
+      author_name: author?.name,
+      author_role: author?.role,
+      author_avatar: author?.avatar_url,
+      content: p.content,
+      link_url: p.link_url,
+      created_at: p.created_at,
+      likes: p.likes
+    };
+  });
+}
+
+export async function createPost(authorId: string, content: string, linkUrl?: string): Promise<void> {
+  const db = getDB();
+  db.posts.push({
+    id: uid(),
+    author_id: authorId,
+    content,
+    link_url: linkUrl || '',
+    created_at: new Date().toISOString(),
+    likes: 0
+  });
+  persist();
+}
+
+export async function likePost(postId: string): Promise<void> {
+  const db = getDB();
+  const post = db.posts.find(p => p.id === postId);
+  if (post) {
+    post.likes += 1;
+    persist();
+  }
 }
 
 export async function getAllSubjects(): Promise<string[]> {

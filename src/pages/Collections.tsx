@@ -117,8 +117,8 @@ export default function Collections() {
 
       <main style={{ padding: '68px 16px 80px', animation: 'fadeIn 0.35s ease both' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h1 style={{ fontSize: '20px', fontWeight: 500, color: '#252525', margin: 0 }}>
-            Collections ({collections.length})
+          <h1 style={{ fontSize: '24px', fontWeight: 600, color: '#252525', margin: 0 }}>
+            My Boards ({collections.length})
           </h1>
           <button
             onClick={() => { playTap(); setShowForm(true); }}
@@ -136,8 +136,8 @@ export default function Collections() {
 
         {/* Create Form */}
         {showForm && (
-          <form onSubmit={handleCreate} style={{ marginBottom: '16px', backgroundColor: 'white', borderRadius: '14px', padding: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#252525', margin: '0 0 12px' }}>New Collection</h3>
+          <form onSubmit={handleCreate} style={{ marginBottom: '24px', backgroundColor: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#252525', margin: '0 0 16px' }}>Create new board</h3>
             <input
               type="text"
               placeholder="Collection name…"
@@ -196,71 +196,59 @@ export default function Collections() {
           </div>
         )}
 
-        {/* Collections list */}
-        {collections.map(col => {
-          const books = col.book_ids.map(id => bookCache[id]).filter(Boolean) as Book[];
-          return (
-            <div key={col.id} style={{ backgroundColor: 'white', borderRadius: '14px', padding: '14px', marginBottom: '12px', boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}>
-              {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <div>
-                  <div style={{ fontSize: '15px', fontWeight: 600, color: '#252525' }}>{col.name}</div>
-                  <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>
-                    {books.length} book{books.length !== 1 ? 's' : ''} · {col.visibility}
+        {/* Collections Grid (Pinterest Style) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
+          {collections.map(col => {
+            const books = col.book_ids.map(id => bookCache[id]).filter(Boolean) as Book[];
+            
+            // Generate Collage
+            const collageCovers = books.slice(0, 3).map(b => b.cover_url);
+            
+            return (
+              <div key={col.id} style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer' }}>
+                <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5', borderRadius: '16px', overflow: 'hidden', backgroundColor: '#E0E0E0', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                  {collageCovers.length > 0 ? (
+                    collageCovers.length === 1 ? (
+                      <img src={collageCovers[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : collageCovers.length === 2 ? (
+                      <div style={{ display: 'flex', height: '100%' }}>
+                        <img src={collageCovers[0]} alt="" style={{ width: '50%', height: '100%', objectFit: 'cover', borderRight: '1px solid white' }} />
+                        <img src={collageCovers[1]} alt="" style={{ width: '50%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', height: '100%' }}>
+                        <img src={collageCovers[0]} alt="" style={{ width: '60%', height: '100%', objectFit: 'cover', borderRight: '1px solid white' }} />
+                        <div style={{ width: '40%', display: 'flex', flexDirection: 'column' }}>
+                          <img src={collageCovers[1]} alt="" style={{ width: '100%', height: '50%', objectFit: 'cover', borderBottom: '1px solid white' }} />
+                          <img src={collageCovers[2]} alt="" style={{ width: '100%', height: '50%', objectFit: 'cover' }} />
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A0A0A0' }}>
+                      <FolderOpen size={32} />
+                    </div>
+                  )}
+                  {/* Overlay Actions */}
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', display: 'flex', gap: '4px' }}>
+                    <button onClick={(e) => { e.stopPropagation(); handleToggleVis(col); }} style={{ padding: '6px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', color: col.visibility === 'public' ? '#047857' : '#6B6B6B', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      {col.visibility === 'public' ? <Globe size={14} /> : <Lock size={14} />}
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); handleDelete(col); }} style={{ padding: '6px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.9)', border: 'none', cursor: 'pointer', color: '#B91C1C', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  {/* Toggle visibility */}
-                  <button
-                    onClick={() => handleToggleVis(col)}
-                    title={col.visibility === 'private' ? 'Make public' : 'Make private'}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: col.visibility === 'public' ? '#047857' : '#6B6B6B', display: 'flex' }}
-                  >
-                    {col.visibility === 'public' ? <Globe size={16} /> : <Lock size={16} />}
-                  </button>
-                  {/* Delete */}
-                  <button
-                    onClick={() => handleDelete(col)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: '#B91C1C', display: 'flex' }}
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                <div>
+                  <div style={{ fontSize: '15px', fontWeight: 600, color: '#252525' }}>{col.name}</div>
+                  <div style={{ fontSize: '12px', color: '#6B6B6B' }}>
+                    {books.length} pin{books.length !== 1 ? 's' : ''}
+                  </div>
                 </div>
               </div>
-
-              {/* Book thumbnails */}
-              {books.length > 0 ? (
-                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none' }}>
-                  {books.map(b => (
-                    <div key={b.id} style={{ flexShrink: 0, position: 'relative' }}>
-                      <button onClick={() => { playTap(); navigate(`/book/${b.id}`); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                        <div style={{ width: '52px', height: '70px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#EDE9DD' }}>
-                          <img src={b.cover_url} alt={b.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => handleRemoveBook(col.id, b.id)}
-                        style={{
-                          position: 'absolute', top: '-6px', right: '-6px',
-                          width: '18px', height: '18px', borderRadius: '50%',
-                          backgroundColor: '#B91C1C', border: '2px solid white',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          cursor: 'pointer', color: 'white', padding: 0,
-                        }}
-                      >
-                        <X size={10} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ fontSize: '13px', color: '#A3A3A3', fontStyle: 'italic' }}>
-                  No books added yet. Browse and save books from their detail page.
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </main>
 
       <style>{`

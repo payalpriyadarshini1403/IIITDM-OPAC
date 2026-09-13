@@ -92,34 +92,83 @@ export default function PublicProfile() {
              </span>
           )}
         </div>
+        
+        {/* Profile Info Details */}
+        <div style={{ marginBottom: '24px', backgroundColor: 'white', padding: '20px', borderRadius: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, marginBottom: '4px' }}>Bio</div>
+            <div style={{ fontSize: '14px', color: '#252525', lineHeight: 1.5 }}>{profileUser.bio || 'No bio provided.'}</div>
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, marginBottom: '4px' }}>Department</div>
+            <div style={{ fontSize: '14px', color: '#252525' }}>{profileUser.department || 'Not specified'}</div>
+          </div>
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, marginBottom: '8px' }}>Skills</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {profileUser.skills?.length ? profileUser.skills.map(skill => (
+                <span key={skill} style={{ padding: '6px 12px', backgroundColor: '#F0F5F5', color: '#155E63', borderRadius: '99px', fontSize: '12px', fontWeight: 500 }}>{skill}</span>
+              )) : <span style={{ fontSize: '13px', color: '#6B6B6B' }}>None</span>}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500, marginBottom: '8px' }}>Interests</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {profileUser.interests?.length ? profileUser.interests.map(interest => (
+                <span key={interest} style={{ padding: '6px 12px', backgroundColor: '#F7F3E8', color: '#D4A373', borderRadius: '99px', fontSize: '12px', fontWeight: 500 }}>{interest}</span>
+              )) : <span style={{ fontSize: '13px', color: '#6B6B6B' }}>None</span>}
+            </div>
+          </div>
+        </div>
 
         <h2 style={{ fontSize: '16px', fontWeight: 500, color: '#252525', margin: '0 0 12px' }}>
           Public Collections ({publicCols.length})
         </h2>
         
+        {/* Collections Grid (Pinterest Style) */}
         {publicCols.length === 0 ? (
            <p style={{ color: '#6B6B6B', fontSize: '14px', textAlign: 'center', padding: '20px 0', backgroundColor: 'white', borderRadius: '12px' }}>
              This user hasn't shared any public collections yet.
            </p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '16px' }}>
             {publicCols.map(col => {
               const books = col.book_ids.map(bid => bookCache[bid]).filter(Boolean);
+              
+              // Generate Collage
+              const collageCovers = books.slice(0, 3).map(b => b.cover_url);
+              
               return (
-                <div key={col.id} style={{ backgroundColor: 'white', borderRadius: '14px', padding: '14px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#252525', marginBottom: '10px' }}>{col.name}</div>
-                  <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none' }}>
-                    {books.slice(0, 5).map(b => (
-                      <button
-                        key={b.id}
-                        onClick={() => { playTap(); navigate(`/book/${b.id}`); }}
-                        style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                      >
-                        <div style={{ width: '52px', height: '70px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#EDE9DD' }}>
-                          <img src={b.cover_url} alt={b.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div key={col.id} onClick={() => { playTap(); /* In a real app we'd navigate to the collection detail page */ }} style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer' }}>
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5', borderRadius: '16px', overflow: 'hidden', backgroundColor: '#E0E0E0', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                    {collageCovers.length > 0 ? (
+                      collageCovers.length === 1 ? (
+                        <img src={collageCovers[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : collageCovers.length === 2 ? (
+                        <div style={{ display: 'flex', height: '100%' }}>
+                          <img src={collageCovers[0]} alt="" style={{ width: '50%', height: '100%', objectFit: 'cover', borderRight: '1px solid white' }} />
+                          <img src={collageCovers[1]} alt="" style={{ width: '50%', height: '100%', objectFit: 'cover' }} />
                         </div>
-                      </button>
-                    ))}
+                      ) : (
+                        <div style={{ display: 'flex', height: '100%' }}>
+                          <img src={collageCovers[0]} alt="" style={{ width: '60%', height: '100%', objectFit: 'cover', borderRight: '1px solid white' }} />
+                          <div style={{ width: '40%', display: 'flex', flexDirection: 'column' }}>
+                            <img src={collageCovers[1]} alt="" style={{ width: '100%', height: '50%', objectFit: 'cover', borderBottom: '1px solid white' }} />
+                            <img src={collageCovers[2]} alt="" style={{ width: '100%', height: '50%', objectFit: 'cover' }} />
+                          </div>
+                        </div>
+                      )
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#A0A0A0', backgroundColor: '#EDE9DD' }}>
+                        No Pins
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '15px', fontWeight: 600, color: '#252525' }}>{col.name}</div>
+                    <div style={{ fontSize: '12px', color: '#6B6B6B' }}>
+                      {books.length} pin{books.length !== 1 ? 's' : ''}
+                    </div>
                   </div>
                 </div>
               );

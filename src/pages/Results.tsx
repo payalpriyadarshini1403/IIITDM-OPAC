@@ -5,7 +5,19 @@ import BottomNav from '../components/BottomNav';
 import BookCard from '../components/BookCard';
 import { playError } from '../lib/sound';
 import { searchBooks, getBooksBySubject, type Book } from '../lib/queries';
-import { SearchX } from 'lucide-react';
+import { SearchX, ExternalLink } from 'lucide-react';
+
+interface ExternalBook {
+  id: string;
+  volumeInfo: {
+    title: string;
+    authors?: string[];
+    description?: string;
+    imageLinks?: { thumbnail: string };
+    infoLink: string;
+    publishedDate?: string;
+  };
+}
 
 type FormatFilter = 'all' | 'physical' | 'ebook' | 'both';
 type AvailFilter = 'all' | 'available';
@@ -82,10 +94,27 @@ export default function Results() {
   ];
 
   const [didYouMean, setDidYouMean] = useState<Book[]>([]);
+  const [externalBooks, setExternalBooks] = useState<ExternalBook[]>([]);
+  const [isExternalLoading, setIsExternalLoading] = useState(false);
+
   useEffect(() => {
     if (q && filtered.length === 0 && !isLoading) {
        searchBooks(q.split('').slice(0, -1).join('')).then(setDidYouMean);
        playError();
+       
+       // Fallback to Google Books API
+       setIsExternalLoading(true);
+       fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5`)
+         .then(res => res.json())
+         .then(data => {
+           if (data.items) {
+             setExternalBooks(data.items);
+           }
+         })
+         .catch(console.error)
+         .finally(() => setIsExternalLoading(false));
+    } else {
+       setExternalBooks([]);
     }
   }, [q, filtered.length, isLoading]);
 
@@ -157,18 +186,59 @@ export default function Results() {
 
             {/* Zero state */}
             {filtered.length === 0 && (
-              <div style={{ padding: '40px 24px', textAlign: 'center', animation: 'fadeIn 0.3s ease both' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: '#B91C1C' }}>
-                  <SearchX size={48} strokeWidth={1.5} />
+              <div style={{ padding: '24px', animation: 'fadeIn 0.3s ease both' }}>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: '#B91C1C' }}>
+                    <SearchX size={48} strokeWidth={1.5} />
+                  </div>
+                  <h2 style={{ fontSize: '17px', fontWeight: 500, color: '#252525', marginBottom: '8px' }}>
+                    Not available locally
+                  </h2>
+                  <p style={{ fontSize: '14px', color: '#6B6B6B', lineHeight: '1.6' }}>
+                    We couldn't find "{q}" in the IIITDM Central Library.
+                  </p>
                 </div>
-                <h2 style={{ fontSize: '17px', fontWeight: 500, color: '#252525', marginBottom: '8px' }}>
-                  No results found
-                </h2>
-                <p style={{ fontSize: '14px', color: '#6B6B6B', lineHeight: '1.6' }}>
-                  We couldn't find anything matching your search.<br/>
-                  Try checking your spelling or use fewer keywords.
-                </p>
-                {didYouMean.length > 0 && (
+                
+                {isExternalLoading && (
+                  <div style={{ textAlign: 'center', padding: '20px', color: '#6B6B6B', fontSize: '13px' }}>
+                    Searching external databases...
+                  </div>
+                )}
+                
+                {externalBooks.length > 0 && (
+                  <div style={{ marginTop: '24px' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#252525', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <ExternalLink size={18} color="#155E63" /> Available on Google Books
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {externalBooks.map(extBook => {
+                        const info = extBook.volumeInfo;
+                        return (
+                          <a key={extBook.id} href={info.infoLink} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <div style={{ display: 'flex', gap: '12px', padding: '12px', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                              <div style={{ width: '60px', height: '85px', borderRadius: '6px', backgroundColor: '#EDE9DD', overflow: 'hidden', flexShrink: 0 }}>
+                                {info.imageLinks?.thumbnail && <img src={info.imageLinks.thumbnail.replace('http:', 'https:')} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#252525', marginBottom: '4px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                  {info.title}
+                                </div>
+                                <div style={{ fontSize: '12px', color: '#6B6B6B', marginBottom: '4px' }}>
+                                  {info.authors?.join(', ') || 'Unknown Author'}
+                                </div>
+                                <div style={{ fontSize: '11px', color: '#155E63', fontWeight: 500 }}>
+                                  {info.publishedDate?.slice(0, 4)} • External Resource
+                                </div>
+                              </div>
+                            </div>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                
+                {didYouMean.length > 0 && externalBooks.length === 0 && !isExternalLoading && (
                   <div style={{ marginTop: '16px', padding: '14px', backgroundColor: 'white', borderRadius: '12px', textAlign: 'left' }}>
                     <p style={{ fontSize: '13px', color: '#6B6B6B', margin: '0 0 8px' }}>Did you mean:</p>
                     {didYouMean.slice(0, 3).map(b => (
