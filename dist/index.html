@@ -9,10 +9,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/IIITDM-OPAC/dist/assets/index-CJ0HagvW.js"></script>
+    <script type="module" crossorigin src="/IIITDM-OPAC/dist/assets/index-C2IC-aYS.js"></script>
     <link rel="stylesheet" crossorigin href="/IIITDM-OPAC/dist/assets/index-DNdu8Y5I.css">
   </head>
   <body>
+    <script>
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        window.location.replace('/IIITDM-OPAC/dist/index.html' + window.location.search + window.location.hash);
+      }
+    </script>
     <div id="root"></div>
   </body>
 </html>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, BookOpen, Clock, Heart, Plus, MapPin, Grid, Lock, Globe, ExternalLink, Activity, Target } from 'lucide-react';
+import { LogOut, BookOpen, Clock, Heart, Plus, MapPin, Grid, Lock, Globe, ExternalLink, Activity, Target, Check, AlertCircle, X, Pencil } from 'lucide-react';
 import BookCover from '../components/BookCover';
 import { useAuth } from '../lib/auth';
 import { getDB, persist } from '../lib/db';
@@ -159,13 +159,20 @@ export default function Account() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #E5E0D8', margin: '0 16px 16px' }}>
-          <button onClick={() => setActiveTab('library')} style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: `2px solid ${activeTab === 'library' ? '#155E63' : 'transparent'}`, color: activeTab === 'library' ? '#155E63' : '#6B6B6B', fontWeight: activeTab === 'library' ? 600 : 500, fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s' }}>
+        <div style={{ display: 'flex', margin: '0 16px 16px', position: 'relative' }}>
+          <button onClick={() => { playTap(); setActiveTab('library'); }} style={{ flex: 1, padding: '12px', background: 'none', border: 'none', color: activeTab === 'library' ? '#155E63' : '#6B6B6B', fontWeight: activeTab === 'library' ? 600 : 500, fontSize: '14px', cursor: 'pointer', transition: 'color 0.3s', position: 'relative', zIndex: 2 }}>
             Library Activity
           </button>
-          <button onClick={() => setActiveTab('profile')} style={{ flex: 1, padding: '12px', background: 'none', border: 'none', borderBottom: `2px solid ${activeTab === 'profile' ? '#155E63' : 'transparent'}`, color: activeTab === 'profile' ? '#155E63' : '#6B6B6B', fontWeight: activeTab === 'profile' ? 600 : 500, fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s' }}>
+          <button onClick={() => { playTap(); setActiveTab('profile'); }} style={{ flex: 1, padding: '12px', background: 'none', border: 'none', color: activeTab === 'profile' ? '#155E63' : '#6B6B6B', fontWeight: activeTab === 'profile' ? 600 : 500, fontSize: '14px', cursor: 'pointer', transition: 'color 0.3s', position: 'relative', zIndex: 2 }}>
             Public Profile
           </button>
+          {/* Animated Tab Indicator */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, height: '3px', backgroundColor: '#155E63', borderRadius: '3px 3px 0 0',
+            width: '50%', transform: `translateX(${activeTab === 'library' ? '0%' : '100%'})`,
+            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', backgroundColor: '#E5E0D8' }} />
         </div>
 
         {activeTab === 'profile' && (
