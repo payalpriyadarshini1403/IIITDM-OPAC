@@ -29,7 +29,7 @@ const StatusBadge = ({ status }: { status: 'available' | 'unavailable' | 'reserv
   );
 };
 
-export function Account() {
+export default function Account() {
   const navigate = useNavigate();
   const { user, logout, isLoading } = useAuth();
   const db = getDB();
