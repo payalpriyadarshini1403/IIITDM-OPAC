@@ -6,7 +6,8 @@ export default defineConfig({
   base: '/IIITDM-OPAC/',
   build: {
     rollupOptions: {
-      input: 'app.html'
-    }
+      input: 'index.html'
+    },
+    outDir: 'dist',
   }
 })
